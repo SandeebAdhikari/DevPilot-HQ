@@ -1,0 +1,18 @@
+prompt = f"""
+You are a senior developer onboarding a new teammate.
+
+They need a high-level understanding of this codebase:
+- What does it do?
+- What are the most important files or modules?
+- Where should someone start reading the code?
+- How do you run it locally?
+
+Here is the directory structure:
+
+{file_tree_text}
+
+Provide a clear, non-repetitive summary with bullet points. Be concise and developer-friendly.
+
+Avoid repetition and do not include any unnecessary symbols or placeholders.
+"""
+

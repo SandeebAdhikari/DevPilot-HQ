@@ -1,4 +1,3 @@
-prompt = f"""
 You are a senior developer onboarding a new teammate.
 
 They need a high-level understanding of this codebase:
@@ -9,10 +8,17 @@ They need a high-level understanding of this codebase:
 
 Here is the directory structure:
 
-{file_tree_text}
+<rich file tree>
 
-Provide a clear, non-repetitive summary with bullet points. Be concise and developer-friendly.
+Avoid placeholder tokens, repetition, or random numbers. Use clear, useful bullet points.
 
-Avoid repetition and do not include any unnecessary symbols or placeholders.
-"""
+Here is a sample of the main code:
+
+"""Django's command-line utility for administrative tasks."""
+
+import os
+import sys
+
+def main():
+    ...
 

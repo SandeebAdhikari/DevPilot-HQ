@@ -1,12 +1,30 @@
-from ollama_infer import run_ollama
-from rich.tree import Tree
-from rich.console import Console
+#!/usr/bin/env python3
+
+import argparse
 from pathlib import Path
+from rich.console import Console
+from rich.tree import Tree
+from devpilot.ollama_infer import run_ollama
 
 console = Console()
+PROMPT_TEMPLATE_PATH = Path(__file__).resolve().parent.parent / "prompts" / "base_prompt.txt"
 
-PROMPT_TEMPLATE_PATH = Path(__file__).parent.parent / "prompts" / "base_prompt.txt"
-
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="DevPilot Onboarder - Explain any codebase locally"
+    )
+    parser.add_argument(
+        "repo_path",
+        type=Path,
+        help="Path to the codebase you want to onboard",
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        default="llama2",  # Changed from "starcoder" for better results
+        help="Ollama model to use (e.g., codellama:13b, mistral, llama2)",
+    )
+    return parser.parse_args()
 
 def build_file_tree(base_path: Path) -> Tree:
     tree = Tree(f":file_folder: [bold blue]{base_path.name}[/]", guide_style="bold bright_blue")
@@ -24,7 +42,6 @@ def build_file_tree(base_path: Path) -> Tree:
 
     add_nodes(base_path, tree)
     return tree
-
 
 def render_file_tree_to_text(base_path: Path) -> str:
     output = []
@@ -45,7 +62,6 @@ def render_file_tree_to_text(base_path: Path) -> str:
     walk(base_path)
     return "\n".join(output)
 
-
 def get_main_code_sample(repo_path: Path, max_lines=20) -> str:
     main_files = ["main.py", "manage.py", "app.py"]
     for file in main_files:
@@ -55,24 +71,22 @@ def get_main_code_sample(repo_path: Path, max_lines=20) -> str:
                 return "\n".join(f.readlines()[:max_lines])
     return "No main code file found."
 
-
-def load_prompt_template(file_tree_text: str, main_code_sample: str) -> str:
+def load_prompt_template(file_tree_text: str) -> str:
     try:
         template = PROMPT_TEMPLATE_PATH.read_text()
         final = template.replace("{{file_tree}}", file_tree_text)
-        final += f"\n\nHere is a sample of the main code:\n{main_code_sample}"
         final += "\n\nAvoid placeholder tokens, repetition, or random numbers. Use clear, useful bullet points."
         return final
     except FileNotFoundError:
         return f"❌ Prompt template not found at {PROMPT_TEMPLATE_PATH}"
 
-
-def handle_onboard(repo_path_str: str, model: str) -> str:
-    repo_path = Path(repo_path_str).resolve()
+def main():
+    args = parse_args()
+    repo_path = args.repo_path.resolve()
 
     if not repo_path.exists() or not repo_path.is_dir():
         console.print(f"[red]Error:[/] Path '{repo_path}' does not exist or is not a directory.")
-        return ""
+        return
 
     console.print(f"[green]📁 Scanning repo:[/] {repo_path}\n")
     tree = build_file_tree(repo_path)
@@ -80,14 +94,17 @@ def handle_onboard(repo_path_str: str, model: str) -> str:
 
     console.print("\n[green]🧠 Generating prompt for local LLM...[/]")
     file_tree_text = render_file_tree_to_text(repo_path)
-    main_code_sample = get_main_code_sample(repo_path)
-    prompt = load_prompt_template(file_tree_text, main_code_sample)
+    prompt = load_prompt_template(file_tree_text)
 
-    console.print(f"\n[dim]--- Prompt Sent to {model} ---[/]")
+    # Add code sample to the prompt
+    main_code_sample = get_main_code_sample(repo_path)
+    prompt += f"\n\nHere is a sample of the main code:\n{main_code_sample}"
+
+    console.print(f"\n[dim]--- Prompt Sent to {args.model} ---[/]")
     console.print(prompt)
 
-    console.print(f"\n[blue]🧪 Running Ollama ({model})...[/]")
-    response = run_ollama(prompt, model=model)
+    console.print(f"\n[blue]🧪 Running Ollama ({args.model})...[/]")
+    response = run_ollama(prompt, model=args.model)
 
     if not response.strip() or response.strip() in {"/", "1", "1111"}:
         console.print("\n[yellow]⚠️ Warning: Model response is empty or unhelpful.[/]")
@@ -104,5 +121,6 @@ def handle_onboard(repo_path_str: str, model: str) -> str:
         log_file.write(response)
     console.print(f"\n[dim]📄 Log saved to {log_path}[/]")
 
-    return response
+if __name__ == "__main__":
+    main()
 

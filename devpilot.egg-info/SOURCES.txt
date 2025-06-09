@@ -1,0 +1,15 @@
+LICENSE
+README.md
+setup.py
+devpilot/__init__.py
+devpilot/explain.py
+devpilot/ollama_infer.py
+devpilot/onboard.py
+devpilot/onboarder.py
+devpilot/refactor.py
+devpilot.egg-info/PKG-INFO
+devpilot.egg-info/SOURCES.txt
+devpilot.egg-info/dependency_links.txt
+devpilot.egg-info/entry_points.txt
+devpilot.egg-info/requires.txt
+devpilot.egg-info/top_level.txt

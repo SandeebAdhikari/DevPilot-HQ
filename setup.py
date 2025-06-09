@@ -3,14 +3,14 @@ from setuptools import setup, find_packages
 setup(
     name='devpilot',
     version='0.1',
-    packages=find_packages(),
+    packages=find_packages(),  # This will find devpilot/
     include_package_data=True,
     install_requires=[
         'rich',
     ],
     entry_points={
         'console_scripts': [
-            'devpilot=onboarder:main',
+            'devpilot=devpilot.onboarder:main',  # 👈 CLI entry now points inside devpilot/
         ],
     },
     author='Sandeeb Adhikari',

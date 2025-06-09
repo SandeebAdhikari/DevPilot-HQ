@@ -90,11 +90,6 @@ Try it on your repo and DM @yourtwitter or open an issue.
 ---
 This project is licensed under the [MIT License](./LICENSE).
 
-## Next Steps
-> Let me know your GitHub username and repo name so I can update the clone URL
-> I can also add a `Makefile`, `.gitignore`, and setup script if you want to polish for external testers
-
-Ready to push this to GitHub?
 
 
 

@@ -1,94 +1,130 @@
 # DevPilot HQ
 
->  The local-first CLI tool to **instantly understand unfamiliar codebases** — perfect for onboarding, handoffs, and solo exploration.
+**AI-powered CLI tool to onboard, explain, and refactor legacy Django codebases.**
 
 ---
 
-##  What It Does
+## What is DevPilot?
+DevPilot is a developer tool that uses local LLMs (via [Ollama](https://ollama.com)) to:
 
-DevPilot HQ scans a project directory and uses a local LLM (via [Ollama](https://ollama.com)) to generate a human-readable summary:
+- **Scan and explain** unstructured legacy Django projects
+- **Onboard** new developers fast with clear summaries
+- **Refactor** old code with senior dev recommendations
 
--  What the codebase does  
--  Where to start reading  
--  Key files or entry points  
--  How to run it locally
-
-Built for **developers who don't want to depend on ChatGPT or SaaS tools**.
+No OpenAI keys. No bullshit. 100% local.
 
 ---
 
-## Quick Start
+## Features
 
-### 1. Install requirements
+| Command                                   | Description                                      |
+|------------------------------------------|--------------------------------------------------|
+| `<file_path> --mode=onboard` | Full codebase tree + overview explanation        |
+| `<file_path --mode=explain` | Explain a single Python file (models, views etc.)|
+| `<file_path --mode=refactor`| Suggest refactors for a legacy file              |
 
-- Python 3.9+
-- [Ollama](https://ollama.com) installed and running
-- A model pulled (we recommend `codellama:13b` or `llama2`)
+
+## Installation (One-liner)
+
+```bash
+git clone https://github.com/SandeebAdhikari/DevPilot-HQ.git
+cd DevPilot-HQ
+bash bootstrap.sh
+```
+
+This will:
+- Create a Python virtual environment
+- Install DevPilot in editable mode
+- Add the `devpilot` command to your environment
+
+---
+
+## Requirements
+- Python 3.7+
+- [Ollama](https://ollama.com) installed and running (e.g., `ollama run llama2`)
+
+We recommend pulling a model before you start:
 
 ```bash
 ollama pull codellama:13b
 ```
+---
 
-### 2. Clone this repo
-````
-git clone https://github.com/yourusername/devpilot-hq.git
-cd devpilot-hq
-````
+## Usage Examples
 
-### 3. Run the CLI
+```bash
+# Onboard a full repo
+ devpilot /path/to/project --mode=onboard
+
+# Explain a single file (e.g., models.py)
+ devpilot /path/to/models.py --mode=explain
+
+# Suggest refactors for views.py
+ devpilot /path/to/views.py --mode=refactor
 ```
-python3 onboarder.py /path/to/repo --model llama2
+
+---
+
+##  Prompt Templates
+Located in `prompts/`:
+- `base_prompt.txt` → used for full repo onboarding
+- `explain_prompt.txt` → used for file explanations
+- `refactor_prompt.txt` → used for smart refactor advice
+
+---
+
+##  File Structure
+
+```
+DevPilot_HQ/
+├── bootstrap.sh              # One-file installer
+├── setup.py                  # Makes DevPilot installable as a CLI tool
+├── onboarder.py              # CLI entrypoint (dispatches commands)
+├── commands/
+│   ├── onboard.py            # Full project scan + analysis
+│   ├── explain.py            # Single file explainer
+│   └── refactor.py           # Single file refactorer
+└── prompts/
+    ├── base_prompt.txt
+    ├── explain_prompt.txt
+    └── refactor_prompt.txt
 ```
 
-#### Example Output
+---
 
-
-> Onboarding Summary: 
-> - This is a Django utility for running admin commands.
-> - The main entry point is manage.py, which loads settings and calls Django’s command-line tools.
-> - To run it locally:
->   - Install dependencies
->   - Use `python manage.py runserver`
-
-
-You also get a .onboarder_log.txt file with the full prompt + model output.
-
-## CLI Options
-| Option       | Description                             |
-| ------------ | --------------------------------------- |
-| `repo_path`  | Path to the repo you want to analyze    |
-| `--model`    | Ollama model to use (default: `llama2`) |
-| `--depth`    | *(Planned)* Max tree depth to display   |
-| `--markdown` | *(Planned)* Output in Markdown format   |
-
-
-- Philosophy
-    - 100% offline by default
-
-    - No cloud dependency
-
-    - No API keys or telemetry
-
-    - No hidden .py files (packaged via PyInstaller in future)
-
-## Coming Soon
-- VSCode extension
-
-- Markdown summary export
-
-- Language-aware model selection
-
-- .onboarderrc config file support
+##  Philosophy
+- 100% offline by default
+- No cloud dependency
+- No API keys or telemetry
+- No hidden .py files (packaged via PyInstaller in future)
 
 ### Why?
 $1.5B is wasted on dev onboarding every year. This tool is designed to reduce ramp-up time — especially in solo-dev and small-team environments.
 
-### Feedback Welcome
-Try it on your repo and DM @yourtwitter or open an issue.
-
- License MIT
 ---
+
+##  Author
+**Sandeeb Adhikari**  
+[github.com/SandeebAdhikari](https://github.com/SandeebAdhikari)
+
+---
+
+##  License MIT
+
 This project is licensed under the [MIT License](./LICENSE).
+
+---
+
+##  Coming Soon
+- Automatic test case generation
+- Patch file suggestions
+- Language server support for live code feedback
+
+---
+
+Built for devs who’d rather refactor than rot.
+ 
+
 
 
 

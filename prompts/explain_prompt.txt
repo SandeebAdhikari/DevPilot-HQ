@@ -1,0 +1,15 @@
+You're a senior Django engineer. Your job is to explain a single file from a legacy Django codebase.
+
+Please:
+- Describe what this file does in plain English
+- Highlight major classes, functions, and their relationships
+- Point out confusing logic, hacks, or embedded side effects
+- Mention anything non-standard or that violates Django best practices
+
+Do not restate the code.  
+Be sharp, specific, and helpful for someone new joining this project.
+
+Here’s the file:
+```python
+<CODE_BLOCK>
+

@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.onboarder_log.txt
+.env
+.venv/
+

@@ -116,12 +116,13 @@ def handle_onboard(repo_path_str: str, model: str, mode: str = "onboard") -> str
     console.print(f"\n[blue]🧪 Running Ollama ({model})...[/]")
     response = run_ollama(prompt, model=model)
 
+    plain_response = markdown_to_text(response)
+
     if not response.strip() or response.strip() in {"/", "1", "1111"}:
         console.print("\n[yellow]⚠️ Warning: Model response is empty or unhelpful.[/]")
         console.print("[dim]Try a larger codebase or switch to a different model.[/]")
     else:
         pretty_response = Markdown(response)
-        plain_response = markdown_to_text(response)
         console.print("\n[bold green]✅ Onboarding Summary:[/]\n")
         console.print(pretty_response)
 

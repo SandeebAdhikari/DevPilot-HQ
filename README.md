@@ -1,105 +1,142 @@
 # DevPilot HQ
 
-**AI-powered CLI tool to onboard, explain, and refactor legacy Django codebases.**
+**CLI tool to onboard, explain, and refactor legacy Django codebases using local LLMs via Ollama.**
 
 ---
 
 ## What is DevPilot?
-DevPilot is a developer tool that uses local LLMs (via [Ollama](https://ollama.com)) to:
 
-- **Scan and explain** unstructured legacy Django projects
-- **Onboard** new developers fast with clear summaries
-- **Refactor** old code with senior dev recommendations
+DevPilot is a command-line developer companion designed for:
 
-No OpenAI keys. No bullshit. 100% local.
+- **Onboarding**: Generate a human-readable overview of a codebase (files + logic summary)
+- **Explaining**: Understand a single file's purpose (e.g., `models.py` or `views.py`)
+- **Refactoring**: Get suggestions to clean up old or confusing code
+
+It runs **100% locally** using [Ollama](https://ollama.com), and works with self-hosted models like `llama2`, `codellama`, or `mistral`.
 
 ---
 
-## Features
+## Installation
 
-| Command                                   | Description                                      |
-|------------------------------------------|--------------------------------------------------|
-| `<file_path> --mode=onboard` | Full codebase tree + overview explanation        |
-| `<file_path --mode=explain` | Explain a single Python file (models, views etc.)|
-| `<file_path --mode=refactor`| Suggest refactors for a legacy file              |
-
-
-## Installation (One-liner)
-
-```bash
+```
 git clone https://github.com/SandeebAdhikari/DevPilot-HQ.git
 cd DevPilot-HQ
 bash bootstrap.sh
 ```
 
-This will:
-- Create a Python virtual environment
-- Install DevPilot in editable mode
-- Add the `devpilot` command to your environment
+This sets up a virtual environment, installs DevPilot in editable mode, and adds the devpilot CLI globally.
 
 ---
 
 ## Requirements
-- Python 3.7+
-- [Ollama](https://ollama.com) running locally via Docker or CLI (e.g., `docker run -p 11434:11434 ollama/ollama` or `ollama run llama2`)
+* Python 3.7+
+* Ollama running locally or remotely
 
-We recommend pulling a model before you start:
-
-```bash
+**Pull a model:**
+```
 ollama pull llama2
 ```
+
+**Start Ollama:**
+```
+# Option 1: Locally
+ollama run llama2
+
+# Option 2: With Docker
+docker run -d -p 11434:11434 ollama/ollama
+```
 ---
 
-## Usage Examples
+## Usage
+```
+# Onboard a full project
+devpilot /path/to/project --mode=onboard --model=llama2
 
-```bash
-# Onboard a full repo
- devpilot /path/to/project --mode=onboard --model=llama2
+# Explain a single file
+devpilot /path/to/models.py --mode=explain --model=llama2
 
-# Explain a single file (e.g., models.py)
- devpilot /path/to/models.py --mode=explain --model=llama2
-
-# Suggest refactors for views.py
- devpilot /path/to/views.py --mode=refactor --model=llama2
+# Suggest refactors
+devpilot /path/to/views.py --mode=refactor --model=llama2
 ```
 
 ---
 
-##  Prompt Templates
-Located in `prompts/`:
-- `base_prompt.txt` → used for full repo onboarding
-- `explain_prompt.txt` → used for file explanations
-- `refactor_prompt.txt` → used for smart refactor advice
-
----
-
-##  File Structure
-
+## File Structure
 ```
-DevPilot_HQ/
+DevPilot-HQ/
 ├── bootstrap.sh              # One-file installer
-├── setup.py                  # Makes DevPilot installable as a CLI tool
-├── onboarder.py              # CLI entrypoint (dispatches commands)
-├── commands/
-│   ├── onboard.py            # Full project scan + analysis
-│   ├── explain.py            # Single file explainer
-│   └── refactor.py           # Single file refactorer
-└── prompts/
-    ├── base_prompt.txt
-    ├── explain_prompt.txt
-    └── refactor_prompt.txt
+├── setup.py                  # CLI packaging
+├── README.md                 # This file
+└── devpilot/
+    ├── onboarder.py          # CLI entrypoint
+    ├── onboard.py            # Onboarding logic
+    ├── explain.py            # File explanation
+    ├── refactor.py           # Refactoring suggestions
+    ├── ollama_infer.py       # Runs Ollama (local or remote)
+    ├── prompt.py             # Resolves prompt paths
+    └── prompts/
+        ├── base_prompt.txt
+        ├── explain_prompt.txt
+        └── refactor_prompt.txt
 ```
 
 ---
 
-##  Philosophy
-- 100% offline by default
-- No cloud dependency
-- No API keys or telemetry
-- No hidden .py files (packaged via PyInstaller in future)
+## Prompt Templates
+Each mode uses a dedicated prompt template stored in devpilot/prompts/.
+
+| Template File | Description | 
+| --- | --- | 
+| `base_prompt.txt` | For full repo onboarding | 
+| `explain_prompt.txt` | For single file explanation | 
+| `refactor_prompt.txt` | For refactoring recommendations |
+
+---
+
+## Output Formatting
+Markdown-style output from models is converted into clean plain text in the terminal. For example:
+
+- `## Header` → Printed as bold text with underlines
+- `* Bullet` → Printed as • Bullet
+
+A full log (prompt + output) is saved to:
+```
+.onboarder_log.txt
+```
+This file appears inside the scanned repo or next to the scanned file.
+
+---
+
+## Remote Ollama Support
+To use a remote Ollama instance (e.g., a home server or Docker host):
+
+```
+export OLLAMA_HOST=http://192.168.1.100:11434
+devpilot /path/to/project --mode=onboard --model=llama2
+```
+Make sure the port is exposed on your server.
+
+---
+
+## Philosophy
+- Offline-first, privacy-focused
+- No OpenAI key or cloud API required
+- No telemetry or lock-in
+- Secure packaging planned with PyInstaller
 
 ### Why?
 $1.5B is wasted on dev onboarding every year. This tool is designed to reduce ramp-up time — especially in solo-dev and small-team environments.
+
+---
+
+## Roadmap
+
+- [x] Multi-mode CLI (`onboard`, `explain`, `refactor`)
+- [x] Markdown rendering → terminal-safe formatting
+- [x] Remote Ollama support
+- [ ] Generate unit tests
+- [ ] PyInstaller packaging
+- [ ] LSP + VSCode integration (planned)
 
 ---
 
@@ -115,21 +152,5 @@ This project is licensed under the [MIT License](./LICENSE).
 
 ---
 
-##  Coming Soon
-- Automatic test case generation
-- Patch file suggestions
-- Language server support for live code feedback
-
----
-
-Built for devs who’d rather refactor than rot.
- 
-
-
-
-
-
-
-
-
+**Built for devs who’d rather refactor than rot.**
 

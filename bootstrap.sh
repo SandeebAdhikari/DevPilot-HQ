@@ -15,6 +15,11 @@ source .venv/bin/activate
 pip install --upgrade pip
 pip install --editable .
 
+# Install required Python packages
+echo "📦 Installing required Python packages (requests, rich)..."
+pip install requests rich
+
+
 # Add global symlink if not already present
 if [ ! -f /usr/local/bin/devpilot ]; then
     echo "🔗 Creating global devpilot command..."

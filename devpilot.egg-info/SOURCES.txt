@@ -6,6 +6,7 @@ devpilot/explain.py
 devpilot/ollama_infer.py
 devpilot/onboard.py
 devpilot/onboarder.py
+devpilot/prompt.py
 devpilot/refactor.py
 devpilot.egg-info/PKG-INFO
 devpilot.egg-info/SOURCES.txt

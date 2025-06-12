@@ -41,12 +41,12 @@ This will:
 
 ## Requirements
 - Python 3.7+
-- [Ollama](https://ollama.com) installed and running (e.g., `ollama run llama2`)
+- [Ollama](https://ollama.com) running locally via Docker or CLI (e.g., `docker run -p 11434:11434 ollama/ollama` or `ollama run llama2`)
 
 We recommend pulling a model before you start:
 
 ```bash
-ollama pull codellama:13b
+ollama pull llama2
 ```
 ---
 
@@ -54,13 +54,13 @@ ollama pull codellama:13b
 
 ```bash
 # Onboard a full repo
- devpilot /path/to/project --mode=onboard
+ devpilot /path/to/project --mode=onboard --model=llama2
 
 # Explain a single file (e.g., models.py)
- devpilot /path/to/models.py --mode=explain
+ devpilot /path/to/models.py --mode=explain --model=llama2
 
 # Suggest refactors for views.py
- devpilot /path/to/views.py --mode=refactor
+ devpilot /path/to/views.py --mode=refactor --model=llama2
 ```
 
 ---

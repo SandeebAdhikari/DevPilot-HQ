@@ -4,11 +4,11 @@ from rich.console import Console
 from rich.markdown import Markdown
 from pathlib import Path
 from devpilot.prompt import get_prompt_path
+import re
 
 console = Console()
 
 def markdown_to_text(md: str) -> str:
-    import re
     lines = md.splitlines()
     output = []
 

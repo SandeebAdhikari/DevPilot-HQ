@@ -1,10 +1,32 @@
 from devpilot.ollama_infer import run_ollama
 from rich.tree import Tree
 from rich.console import Console
+from rich.markdown import Markdown
 from pathlib import Path
 from devpilot.prompt import get_prompt_path
 
 console = Console()
+
+def markdown_to_text(md: str) -> str:
+    import re
+    lines = md.splitlines()
+    output = []
+
+    for line in lines:
+        if line.startswith("# "):
+            header = line[2:].strip()
+            output.append(header.upper())
+            output.append("=" * len(header))
+        elif line.startswith("## "):
+            subheader = line[3:].strip()
+            output.append(subheader)
+            output.append("-" * len(subheader))
+        elif line.startswith("* "):
+            output.append(f"• {line[2:]}")
+        else:
+            output.append(line)
+
+    return "\n".join(output)
 
 def load_prompt_template(prompt_path: Path, content: str) -> str:
     try:
@@ -98,15 +120,17 @@ def handle_onboard(repo_path_str: str, model: str, mode: str = "onboard") -> str
         console.print("\n[yellow]⚠️ Warning: Model response is empty or unhelpful.[/]")
         console.print("[dim]Try a larger codebase or switch to a different model.[/]")
     else:
+        pretty_response = Markdown(response)
+        plain_response = markdown_to_text(response)
         console.print("\n[bold green]✅ Onboarding Summary:[/]\n")
-        console.print(response)
+        console.print(pretty_response)
 
     log_path = repo_path.parent / ".onboarder_log.txt" if repo_path.is_file() else repo_path / ".onboarder_log.txt"
     with open(log_path, "w", encoding="utf-8") as log_file:
         log_file.write("----- PROMPT -----\n")
         log_file.write(prompt + "\n\n")
         log_file.write("----- RESPONSE -----\n")
-        log_file.write(response)
+        log_file.write(plain_response)
 
     console.print(f"\n[dim]📄 Log saved to {log_path}[/]")
 

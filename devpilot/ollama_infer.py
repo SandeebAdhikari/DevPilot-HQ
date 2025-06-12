@@ -4,11 +4,12 @@ import requests
 
 def run_ollama(prompt: str, model: str = "llama2", timeout: int = 90) -> str:
     """
-    Run an Ollama model either via HTTP API (remote or Docker) or fallback to local CLI.
+    Run an Ollama model either via Docker HTTP API or fallback to local CLI.
 
-    Order:
-    1. Use HTTP API if OLLAMA_HOST is set or defaults to localhost
-    2. If that fails, fallback to native CLI
+    Priority:
+    1. If OLLAMA_HOST is set, use it as the HTTP target
+    2. Otherwise try Docker default: http://localhost:11434
+    3. If HTTP fails, fallback to native ollama run subprocess
 
     Args:
         prompt (str): The user prompt or input
@@ -20,29 +21,26 @@ def run_ollama(prompt: str, model: str = "llama2", timeout: int = 90) -> str:
     """
     ollama_host = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 
-    # Try HTTP API (Docker/Remote)
+#This is our ollama_infer.py, so modify this but do not loose any functionality    
+# Try Docker/HTTP API first
     try:
         response = requests.post(
             f"{ollama_host}/api/generate",
-            json={"model": model, "prompt": prompt, "stream": False},
+            json={
+                "model": model,
+                "prompt": prompt,
+                "stream": False
+            },
             timeout=timeout
         )
         response.raise_for_status()
-        output = response.json().get("response", "").strip()
-
-        if not output or output in {"/", "1", "1111", "0"}:
-            return (
-                "❌ Received empty or invalid response from HTTP API.\n"
-                "👉 Try another model (e.g., `codellama:13b`) or increase prompt richness."
-            )
-
-        return output
+        return response.json().get("response", "").strip()
 
     except Exception as e:
         print(f"[⚠️] Ollama HTTP API failed ({ollama_host}): {e}")
         print("[ℹ️] Falling back to native CLI...")
 
-    # Fallback: CLI
+    # Fallback to native CLI
     try:
         result = subprocess.run(
             ["ollama", "run", model],
@@ -51,24 +49,12 @@ def run_ollama(prompt: str, model: str = "llama2", timeout: int = 90) -> str:
             stderr=subprocess.PIPE,
             timeout=timeout,
         )
-
         if result.returncode != 0:
-            return f"❌ Ollama CLI Error [{result.returncode}]: {result.stderr.decode().strip()}"
+            raise RuntimeError(result.stderr.decode().strip())
+        return result.stdout.decode("utf-8").strip()
 
-        output = result.stdout.decode("utf-8").strip()
-
-        if not output or output in {"/", "1", "1111", "0"}:
-            return (
-                "❌ Received empty or invalid response from CLI.\n"
-                "👉 Try a different model or check if the prompt is too short."
-            )
-
-        return output
-
-    except subprocess.TimeoutExpired:
-        return f"❌ Timeout: Model '{model}' exceeded {timeout}s limit"
-    except FileNotFoundError:
-        return "❌ Ollama not found. Is it installed and in your PATH?"
     except Exception as e:
-        return f"❌ Both HTTP and CLI execution failed: {e}"
+        return f"❌ Both Docker API and CLI failed: {e}"
+
+
 

@@ -1,0 +1,21 @@
+You're a senior systems engineer reviewing a legacy C file under deadline.
+
+Your job is to:
+
+- Identify dangerous patterns: manual buffer handling, unchecked mallocs, type punning, or inconsistent pointer arithmetic
+
+- Call out any long functions, duplicated logic, nested control structures, or global state abuse
+
+- Flag non-reentrant functions, implicit side effects, or anything breaking modular boundaries
+
+- Suggest precise, actionable improvements: split logic, add input guards, refactor unsafe blocks
+
+- Be strict on anything that would make debugging memory issues hell
+
+- Keep it blunt and practical — like you're handing this off to a junior dev during an outage.
+
+Here’s the file:
+
+```c
+{{content}}
+

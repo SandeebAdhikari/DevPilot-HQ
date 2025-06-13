@@ -5,7 +5,10 @@ from rich.markdown import Markdown
 from pathlib import Path
 from devpilot.prompt import get_prompt_path
 from devpilot.log_utils import resolve_log_path
+from devpilot.session_logger import SessionLogger
 from devpilot.interactive import interactive_follow_up
+from devpilot.detect_lang import detect_language_from_path
+from typing import Optional
 import re
 
 console = Console()
@@ -73,14 +76,39 @@ def render_file_tree_to_text(base_path: Path) -> str:
     walk(base_path)
     return "\n".join(output)
 
-def get_main_code_sample(repo_path: Path, max_lines=20) -> str:
-    main_files = ["main.py", "manage.py", "app.py"]
-    for file in main_files:
-        file_path = repo_path / file
+
+def get_main_code_sample(repo_path: Path, lang: str = "python", max_lines: int = 20) -> str:
+    """
+    Tries to find a primary code file for a given language and returns the top lines.
+    
+    Args:
+        repo_path (Path): Root of the codebase.
+        lang (str): Programming language or framework (e.g., python, java, react, c).
+        max_lines (int): Number of lines to preview.
+
+    Returns:
+        str: Code sample or fallback message.
+    """
+    main_files_by_lang = {
+        "python": ["main.py", "manage.py", "app.py"],
+        "react": ["src/index.js", "src/index.jsx", "src/main.tsx"],
+        "java": ["Main.java", "App.java", "src/Main.java"],
+        "c": ["main.c", "main.cpp", "src/main.c", "src/main.cpp"]
+    }
+
+    candidates = main_files_by_lang.get(lang.lower(), [])
+
+    for relative_path in candidates:
+        file_path = repo_path / relative_path
         if file_path.exists():
-            with open(file_path, "r", encoding="utf-8") as f:
-                return "\n".join(f.readlines()[:max_lines])
-    return "No main code file found."
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    return "\n".join(f.readlines()[:max_lines])
+            except Exception as e:
+                return f"⚠️ Failed to read {relative_path}: {e}"
+
+    return f"⚠️ No recognized main file found for language: {lang}"
+
 
 def handle_onboard(repo_path_str: str, model: str, mode: str = "onboard") -> str:
     repo_path = Path(repo_path_str).resolve()
@@ -89,7 +117,9 @@ def handle_onboard(repo_path_str: str, model: str, mode: str = "onboard") -> str
         console.print(f"[red]Error:[/] Path '{repo_path}' does not exist.")
         return ""
 
-    prompt_path = get_prompt_path(mode)
+
+    lang = detect_language_from_path(repo_path)
+    prompt_path = get_prompt_path(mode, lang)
 
     if repo_path.is_file():
         console.print(f"[green]📄 Analyzing file:[/] {repo_path.name}\n")
@@ -109,7 +139,7 @@ def handle_onboard(repo_path_str: str, model: str, mode: str = "onboard") -> str
         file_tree_text = render_file_tree_to_text(repo_path)
         prompt = load_prompt_template(prompt_path, file_tree_text)
 
-        code_sample = get_main_code_sample(repo_path)
+        code_sample = get_main_code_sample(repo_path, lang=lang)
         prompt += f"\n\nHere is a sample of the main code:\n{code_sample}"
 
     console.print(f"\n[dim]--- Prompt Sent to {model} ---[/]")
@@ -128,15 +158,15 @@ def handle_onboard(repo_path_str: str, model: str, mode: str = "onboard") -> str
         console.print("\n[bold green]✅ Onboarding Summary:[/]\n")
         console.print(pretty_response)
 
-    log_path = resolve_log_path()
-    with open(log_path, "w", encoding="utf-8") as log_file:
-        log_file.write("----- PROMPT -----\n")
-        log_file.write(prompt + "\n\n")
-        log_file.write("----- RESPONSE -----\n")
-        log_file.write(plain_response)
+    
+    code_sample = get_main_code_sample(repo_path, lang=lang)
+    log_path = resolve_log_path(mode="onboard", lang=lang, suppress_prompt=True)
 
-    console.print(f"\n[dim]📄 Log saved to {log_path}[/]")
-    interactive_follow_up(prompt, model, run_ollama)
+    logger = SessionLogger(log_path, use_timestamp=True, format="markdown")
+    logger.log_entry(prompt, plain_response)
+    logger.save()
+
+    interactive_follow_up(prompt, model, run_ollama, lang=lang)
 
     return response
 

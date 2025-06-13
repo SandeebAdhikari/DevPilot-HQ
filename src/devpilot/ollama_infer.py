@@ -4,7 +4,9 @@ import requests
 import sys
 import time
 import json
+from rich.console import Console 
 
+console = Console()
 def run_ollama(prompt: str, model: str = "llama2", timeout: int = 90, max_retries: int = 1) -> str:
     """
     Runs Ollama with HTTP streaming first, falls back to local CLI on failure.
@@ -22,7 +24,7 @@ def run_ollama(prompt: str, model: str = "llama2", timeout: int = 90, max_retrie
 
     # Soft cap to prevent too long prompts
     if len(prompt) > 4000:
-        print("[yellow]⚠️ Prompt may be too long. Truncating to ensure responsiveness.[/]")
+        console.print("[yellow]⚠️ Prompt may be too long. Truncating to ensure responsiveness.[/]")
         prompt = prompt[-4000:]  # keep last 4000 characters
 
     # Try streaming HTTP API first

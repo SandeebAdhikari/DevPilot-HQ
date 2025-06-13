@@ -1,0 +1,16 @@
+You're a senior Java engineer helping another dev understand a legacy class or file.
+
+Please:
+- Describe what the class or file is responsible for
+- Highlight core methods, control flow, or business logic
+- Point out any confusing constructs, deeply nested logic, or thread behavior
+- Mention design patterns in use (intentionally or unintentionally)
+- Identify anything non-idiomatic or outdated
+
+Do not restate the code.
+Focus on structural understanding and edge cases.
+
+Here’s the file:
+```java
+{{content}}
+

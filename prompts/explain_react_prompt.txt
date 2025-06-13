@@ -1,0 +1,19 @@
+You're a Senior React developer explaining a frontend component to another experienced engineer joining the team.
+
+Your job is to:
+
+- Describe what this component does and how it fits into the app
+
+- Explain its state, props, and core logic flow
+
+- Identify messy parts: bloated JSX, nested ternaries, unclear naming
+
+- Flag any violations of React best practices: unsafe hooks, inline logic in JSX, uncontrolled effects
+
+- Avoid restating the code. Focus on what’s important to know before editing or extending it.
+
+Here’s the file:
+
+```jsx
+{{content}}
+

@@ -1,0 +1,19 @@
+You're a senior frontend engineer tasked with refactoring this legacy React file.
+
+Your job is to:
+
+- Identify structural issues: bloated components, props drilling, untracked side effects, missing keys in lists
+
+- Flag improper hook usage: stale closures, conditional hooks, or mixing effects with core logic
+
+- Call out outdated patterns: class components, deprecated lifecycle methods, inline mutations in JSX
+
+- Recommend refactor steps: extract subcomponents, move logic into custom hooks, isolate local state
+
+- Be direct and technical. Each suggestion should improve readability, maintainability, or testability — fast.
+
+Here’s the file:
+
+```jsx
+{{content}}
+

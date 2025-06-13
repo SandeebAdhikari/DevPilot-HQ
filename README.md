@@ -67,6 +67,10 @@ DevPilot-HQ/
 ├── bootstrap.sh              # One-file installer
 ├── setup.py                  # CLI packaging
 ├── README.md                 # This file
+├── prompts/                  # Prompt templates (outside package)
+│   ├── base_prompt.txt
+│   ├── explain_prompt.txt
+│   └── refactor_prompt.txt
 └── devpilot/
     ├── onboarder.py          # CLI entrypoint
     ├── onboard.py            # Onboarding logic
@@ -74,10 +78,8 @@ DevPilot-HQ/
     ├── refactor.py           # Refactoring suggestions
     ├── ollama_infer.py       # Runs Ollama (local or remote)
     ├── prompt.py             # Resolves prompt paths
-    └── prompts/
-        ├── base_prompt.txt
-        ├── explain_prompt.txt
-        └── refactor_prompt.txt
+    ├── log_utils.py          # Prompt user for log location
+    └── interactive.py        # Interactive follow-up loop
 ```
 
 ---
@@ -104,6 +106,23 @@ A full log (prompt + output) is saved to:
 .onboarder_log.txt
 ```
 This file appears inside the scanned repo or next to the scanned file.
+
+---
+
+## Log File Control 
+DevPilot now asks where you want to save your logs. 
+- You can enter a custom path. 
+- If left blank, logs default to your system’s `~/Documents/` folder. 
+- Log is always overwritten (not appended) for clarity.”
+
+---
+
+## Prompt Size Handling 
+To avoid model timeouts or errors: 
+* If the prompt grows beyond ~2500 tokens, older parts may be truncated. 
+* You’ll see a warning if the prompt gets too long. 
+* Helps maintain reliability during interactive follow-up loops.
+
 
 ---
 
@@ -134,6 +153,9 @@ $1.5B is wasted on dev onboarding every year. This tool is designed to reduce ra
 - [x] Multi-mode CLI (`onboard`, `explain`, `refactor`)
 - [x] Markdown rendering → terminal-safe formatting
 - [x] Remote Ollama support
+- [x] Interactive follow-up by default
+- [x] Prompt streaming
+- [x] Prompt truncation for stability
 - [ ] Generate unit tests
 - [ ] PyInstaller packaging
 - [ ] LSP + VSCode integration (planned)

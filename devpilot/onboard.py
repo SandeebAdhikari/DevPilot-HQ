@@ -4,6 +4,8 @@ from rich.console import Console
 from rich.markdown import Markdown
 from pathlib import Path
 from devpilot.prompt import get_prompt_path
+from devpilot.log_utils import resolve_log_path
+from devpilot.interactive import interactive_follow_up
 import re
 
 console = Console()
@@ -126,7 +128,7 @@ def handle_onboard(repo_path_str: str, model: str, mode: str = "onboard") -> str
         console.print("\n[bold green]✅ Onboarding Summary:[/]\n")
         console.print(pretty_response)
 
-    log_path = repo_path.parent / ".onboarder_log.txt" if repo_path.is_file() else repo_path / ".onboarder_log.txt"
+    log_path = resolve_log_path()
     with open(log_path, "w", encoding="utf-8") as log_file:
         log_file.write("----- PROMPT -----\n")
         log_file.write(prompt + "\n\n")
@@ -134,6 +136,7 @@ def handle_onboard(repo_path_str: str, model: str, mode: str = "onboard") -> str
         log_file.write(plain_response)
 
     console.print(f"\n[dim]📄 Log saved to {log_path}[/]")
+    interactive_follow_up(prompt, model, run_ollama)
 
     return response
 

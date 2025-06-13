@@ -1,46 +1,56 @@
 import os
 import subprocess
 import requests
+import sys
+import time
+import json
 
-def run_ollama(prompt: str, model: str = "llama2", timeout: int = 90) -> str:
+def run_ollama(prompt: str, model: str = "llama2", timeout: int = 90, max_retries: int = 1) -> str:
     """
-    Run an Ollama model either via Docker HTTP API or fallback to local CLI.
-
-    Priority:
-    1. If OLLAMA_HOST is set, use it as the HTTP target
-    2. Otherwise try Docker default: http://localhost:11434
-    3. If HTTP fails, fallback to native ollama run subprocess
+    Runs Ollama with HTTP streaming first, falls back to local CLI on failure.
 
     Args:
-        prompt (str): The user prompt or input
-        model (str): The model to use (e.g., 'llama2', 'codellama:7b')
-        timeout (int): Max time to wait for the model (in seconds)
+        prompt (str): Input prompt
+        model (str): Model name
+        timeout (int): Max wait time in seconds
+        max_retries (int): Retry attempts if streaming fails
 
     Returns:
-        str: The model's output text or an error message
+        str: Output from the model
     """
     ollama_host = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 
-#This is our ollama_infer.py, so modify this but do not loose any functionality    
-# Try Docker/HTTP API first
+    # Soft cap to prevent too long prompts
+    if len(prompt) > 4000:
+        print("[yellow]⚠️ Prompt may be too long. Truncating to ensure responsiveness.[/]")
+        prompt = prompt[-4000:]  # keep last 4000 characters
+
+    # Try streaming HTTP API first
     try:
         response = requests.post(
             f"{ollama_host}/api/generate",
-            json={
-                "model": model,
-                "prompt": prompt,
-                "stream": False
-            },
+            json={"model": model, "prompt": prompt, "stream": True},
+            stream=True,
             timeout=timeout
         )
         response.raise_for_status()
-        return response.json().get("response", "").strip()
+
+        full_response = []
+        for line in response.iter_lines():
+            if line:
+                data = json.loads(line.decode("utf-8"))
+                token = data.get("response", "")
+                full_response.append(token)
+                sys.stdout.write(token)
+                sys.stdout.flush()
+        print()  # newline after stream
+        return "".join(full_response).strip()
 
     except Exception as e:
-        print(f"[⚠️] Ollama HTTP API failed ({ollama_host}): {e}")
+        print(f"\n[⚠️] Ollama HTTP API failed ({ollama_host}): {e}")
         print("[ℹ️] Falling back to native CLI...")
 
-    # Fallback to native CLI
+    # Fallback: native CLI
     try:
         result = subprocess.run(
             ["ollama", "run", model],
@@ -55,6 +65,4 @@ def run_ollama(prompt: str, model: str = "llama2", timeout: int = 90) -> str:
 
     except Exception as e:
         return f"❌ Both Docker API and CLI failed: {e}"
-
-
 

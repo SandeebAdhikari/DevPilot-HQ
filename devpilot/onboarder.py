@@ -39,9 +39,9 @@ def main():
     if args.mode == "onboard":
         handle_onboard(str(args.repo_path), model=args.model, mode=args.mode)
     elif args.mode == "explain":
-        handle_explain(str(args.repo_path), model=args.model)
+        handle_explain(str(args.repo_path), model=args.model,  mode=args.mode)
     elif args.mode == "refactor":
-        handle_refactor(str(args.repo_path), model=args.model)
+        handle_refactor(str(args.repo_path), model=args.model,  mode=args.mode)
     else:
         console.print(f"[red]❌ Unknown mode:[/] {args.mode}")
 

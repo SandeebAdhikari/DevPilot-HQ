@@ -11,13 +11,13 @@ from rich.markdown import Markdown
 
 console = Console()
 
-def handle_explain(file_path: str, model: str, mode: str = "explain") -> str:
+def handle_explain(file_path: str, model: str, mode: str = "explain", lang=None) -> str:
     try:
         code = Path(file_path).read_text(encoding="utf-8")
     except Exception as e:
         return f"❌ Error reading file: {e}"
 
-    lang = detect_language_from_path(Path(file_path))
+    lang = lang or detect_language_from_path(Path(file_path))
 
     prompt_path = get_prompt_path(mode, lang)
     prompt = load_prompt_template(prompt_path, code)

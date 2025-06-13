@@ -1,17 +1,15 @@
-#!/usr/bin/env python3
-
-import argparse
 from pathlib import Path
 from rich.console import Console
-
 from devpilot.onboard import handle_onboard
 from devpilot.explain import handle_explain
 from devpilot.refactor import handle_refactor
+import argparse
 
 console = Console()
 
 def parse_args():
     parser = argparse.ArgumentParser(
+        prog="devpilot",
         description="DevPilot - Local codebase assistant"
     )
     parser.add_argument(
@@ -31,17 +29,23 @@ def parse_args():
         default="onboard",
         help="Prompt mode to use: onboard, explain, or refactor",
     )
+    parser.add_argument(
+        "--lang",
+        type=str,
+        default=None,
+        help="Optional language override (e.g., python, java, react, c)",
+    )
     return parser.parse_args()
 
 def main():
     args = parse_args()
 
     if args.mode == "onboard":
-        handle_onboard(str(args.repo_path), model=args.model, mode=args.mode)
+        handle_onboard(str(args.repo_path), model=args.model, mode=args.mode, lang=args.lang)
     elif args.mode == "explain":
-        handle_explain(str(args.repo_path), model=args.model,  mode=args.mode)
+        handle_explain(str(args.repo_path), model=args.model, mode=args.mode, lang=args.lang)
     elif args.mode == "refactor":
-        handle_refactor(str(args.repo_path), model=args.model,  mode=args.mode)
+        handle_refactor(str(args.repo_path), model=args.model, mode=args.mode, lang=args.lang)
     else:
         console.print(f"[red]❌ Unknown mode:[/] {args.mode}")
 

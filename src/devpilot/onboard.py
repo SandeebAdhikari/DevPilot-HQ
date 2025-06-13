@@ -110,7 +110,7 @@ def get_main_code_sample(repo_path: Path, lang: str = "python", max_lines: int =
     return f"⚠️ No recognized main file found for language: {lang}"
 
 
-def handle_onboard(repo_path_str: str, model: str, mode: str = "onboard") -> str:
+def handle_onboard(repo_path_str: str, model: str, mode: str = "onboard", lang=None) -> str:
     repo_path = Path(repo_path_str).resolve()
 
     if not repo_path.exists():
@@ -118,7 +118,7 @@ def handle_onboard(repo_path_str: str, model: str, mode: str = "onboard") -> str
         return ""
 
 
-    lang = detect_language_from_path(repo_path)
+    lang = lang or detect_language_from_path(repo_path)
     prompt_path = get_prompt_path(mode, lang)
 
     if repo_path.is_file():

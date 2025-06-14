@@ -33,3 +33,8 @@ where = ["src"]
 [project.optional-dependencies]
 dev = ["pytest"]
 
+[project.urls]
+Homepage = "https://github.com/SandeebAdhikari/DevPilot-HQ"
+Issues = "https://github.com/SandeebAdhikari/DevPilot-HQ/issues"
+Changelog = "https://github.com/SandeebAdhikari/DevPilot-HQ/releases"
+

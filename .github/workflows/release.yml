@@ -2,21 +2,23 @@ name: Build & Release DevPilot
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
-  release:
-    types: [created]
+    tags:
+      - 'v*'  # Trigger only on version tags
 
 jobs:
-  test-build-release:
+  build-test-publish:
+    name: Build, Test, and Publish to PyPI
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write          # For GitHub Releases
+      id-token: write          # Required for Trusted Publishing
+
+    environment:
+      name: pypi               # Must match what you set up on PyPI
+      url: https://pypi.org/p/devpilot  # Optional, nice UI link
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -41,8 +43,7 @@ jobs:
       - name: Build PyInstaller binary
         run: pyinstaller devpilot.spec
 
-      - name: Upload Release Assets (GitHub Releases only)
-        if: github.event_name == 'release'
+      - name: Upload GitHub Release Assets
         uses: softprops/action-gh-release@v1
         with:
           files: |
@@ -52,12 +53,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload to PyPI (only on tagged releases)
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: |
-          python -m pip install twine
-          twine upload dist/*.whl dist/*.tar.gz
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      - name: Publish distribution 📦 to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
 

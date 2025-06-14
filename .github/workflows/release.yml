@@ -30,7 +30,8 @@ jobs:
           pip install build pytest pyinstaller
 
       - name: Run tests
-        run: pytest
+        run: |
+          PYTHONPATH=src pytest
 
       - name: Build wheel and sdist
         run: python -m build

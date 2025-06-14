@@ -15,7 +15,7 @@ jobs:
 
     environment:
       name: pypi               # Must match what you set up on PyPI
-      url: https://pypi.org/p/devpilot  # Optional, nice UI link
+      url: https://pypi.org/p/devpilot-hq  # Optional, nice UI link
 
     steps:
       - name: Checkout repository

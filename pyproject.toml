@@ -13,7 +13,8 @@ authors = [
 ]
 license = { text = "MIT" }
 dependencies = [
-    "rich"
+    "rich",
+    "requests"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",

@@ -20,7 +20,7 @@ rm -rf dist/
 python -m build
 
 # Commit and tag
-echo "📦 Committing and tagging v$VERSION..."
+echo -e "\n\n📦 Committing and tagging v$VERSION..."
 git add .
 git commit -m "Release: v$VERSION"
 git tag v$VERSION

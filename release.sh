@@ -27,8 +27,9 @@ git tag v$VERSION
 
 # Push commit and tag
 echo "🚀 Pushing to origin..."
-git push origin main
 git push origin v$VERSION
+git push origin main
+
 
 echo "✅ Done! Version $VERSION has been released and is being published by GitHub Actions."
 

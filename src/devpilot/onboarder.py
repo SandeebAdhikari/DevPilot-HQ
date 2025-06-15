@@ -15,13 +15,8 @@ def parse_args():
     parser.add_argument(
         "repo_path",
         type=Path,
+        metavar="<repo_path>",
         help="Path to the file or codebase you want to analyze",
-    )
-    parser.add_argument(
-        "--model",
-        type=str,
-        default="llama2",
-        help="Ollama model to use (e.g., codellama:13b, mistral, llama2)",
     )
     parser.add_argument(
         "--mode",
@@ -29,6 +24,14 @@ def parse_args():
         default="onboard",
         help="Prompt mode to use: onboard, explain, or refactor",
     )
+
+    parser.add_argument(
+        "--model",
+        type=str,
+        default="llama2",
+        help="Ollama model to use (e.g., codellama:13b, mistral, llama2)",
+    )
+
     parser.add_argument(
         "--lang",
         type=str,

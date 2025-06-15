@@ -1,0 +1,22 @@
+cff-version: 1.0.1
+message: "If you use this tool, please cite it as below."
+title: "DevPilot-HQ"
+authors:
+  - family-names: "Adhikari"
+    given-names: "Sandeeb"
+    orcid: "https://orcid.org/0009-0004-5049-3664"
+    email: "adhikarisandeeb@gmail.com"  
+keywords:
+  - developer onboarding
+  - refactor
+  - code explain
+  - local LLM
+  - python
+  - legacy codebase
+  - legacy C 
+  - cli
+license: MIT
+version: "1.0.1"
+repository-code: "https://github.com/SandeebAdhikari/DevPilot-HQ"
+url: "https://pypi.org/project/devpilot-hq/"
+

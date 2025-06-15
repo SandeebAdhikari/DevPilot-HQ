@@ -1,6 +1,9 @@
+[![PyPI](https://img.shields.io/pypi/v/devpilot-hq)](https://pypi.org/project/devpilot-hq/)
+
+
 # DevPilot HQ
 
-**CLI tool to onboard, explain, and refactor legacy Django codebases using local LLMs via Ollama.**
+**CLI tool to onboard, explain, and refactor legacy codes bases for python, c, javaand c++ using local LLMs via Ollama.**
 
 ---
 

@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.7"
 
 authors = [
-  { name = "Sandeeb Adhikari", email = "adhikarisandeeb@gmail.com", orcid = "https://orcid.org/0009-0004-5049-3664" }
+  { name = "Sandeeb Adhikari", email = "adhikarisandeeb@gmail.com" }
 ]
 
 license = { text = "MIT" }

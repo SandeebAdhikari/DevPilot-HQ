@@ -1,0 +1,22 @@
+{
+  "title": "DevPilot HQ",
+  "upload_type": "software",
+  "description": "CLI tool to onboard, explain, and refactor legacy codebases using local LLMs via Ollama.",
+  "creators": [
+    {
+      "name": "Adhikari, Sandeeb",
+      "orcid": "0009-0004-5049-3664",
+      "affiliation": "Independent Developer"
+    }
+  ],
+  "license": "MIT",
+  "keywords": ["LLM", "CLI", "Ollama", "developer tools", "onboarding"],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/SandeebAdhikari/DevPilot-HQ",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}
+

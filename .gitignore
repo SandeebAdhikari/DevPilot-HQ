@@ -1,7 +1,63 @@
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
-*.egg-info/
-.onboarder_log.txt
-.env
+*.py[cod]
+*$py.class
+
+# Virtual environment
 .venv/
+env/
+venv/
+
+# VSCode and IDE settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# PyInstaller build artifacts
+build/
+dist/
+*.spec
+
+# Python build artifacts
+*.egg-info/
+*.egg
+*.log
+
+# Build system artifacts
+.mypy_cache/
+.pytest_cache/
+.cache/
+.coverage
+.tox/
+pip-wheel-metadata/
+
+# Compiled C files
+*.so
+*.pyd
+*.dll
+
+# Mac & Linux junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# PyPI build artifacts
+*.tar.gz
+*.whl
+
+# GitHub Actions temp
+*.log
+__pypackages__/
+
+# System-level swap/lock/temp files
+*.swp
+*.lock
+*.bak
+*.tmp
+
+# DevPilot custom
+.onboarder_log.txt
+docs/generated/
+logs/
 

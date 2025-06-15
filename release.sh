@@ -21,7 +21,7 @@ python -m build
 
 # Commit and tag
 echo "📦 Committing and tagging v$VERSION..."
-git add pyproject.toml
+git add .
 git commit -m "Release: v$VERSION"
 git tag v$VERSION
 

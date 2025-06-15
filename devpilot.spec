@@ -9,7 +9,7 @@ a = Analysis(
     ['src/devpilot/onboarder.py'],
     pathex=[],
     binaries=[],
-    datas=datas,  # 👈 prompt templates bundled
+    datas=datas,  
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

@@ -54,9 +54,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Move PyInstaller binary out of dist
-      run: |
-        mkdir -p release_assets/
-        mv dist/devpilot release_assets/
+        run: |
+          mkdir -p release_assets/
+          mv dist/devpilot release_assets/
 
 
       - name: Publish distribution 📦 to PyPI

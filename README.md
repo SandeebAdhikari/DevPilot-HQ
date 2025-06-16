@@ -1,4 +1,5 @@
-[![PyPI](https://img.shields.io/pypi/v/devpilot-hq)](https://pypi.org/project/devpilot-hq/)
+[![PyPI](https://img.shields.io/pypi/v/devpilot-hq)](https://pypi.org/project/devpilot-hq/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15670806.svg)](https://doi.org/10.5281/zenodo.15670806)
+
 
 # DevPilot HQ
 

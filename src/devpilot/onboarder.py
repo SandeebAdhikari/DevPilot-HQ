@@ -20,7 +20,7 @@ def parse_args():
     )
     parser.add_argument(
         "--mode",
-        type=str,
+        choices=["onboard", "explain", "refactor"],
         default="onboard",
         help="Prompt mode to use: onboard, explain, or refactor",
     )
@@ -38,13 +38,25 @@ def parse_args():
         default=None,
         help="Optional language override (e.g., python, java, react, c)",
     )
+
+    parser.add_argument(
+        "--generate-map",
+        action="store_true",
+        help="Generate or update .devpilot/repomap.json during onboarding"
+    )
+
     return parser.parse_args()
 
 def main():
     args = parse_args()
 
     if args.mode == "onboard":
-        handle_onboard(str(args.repo_path), model=args.model, mode=args.mode, lang=args.lang)
+        handle_onboard(
+            str(args.repo_path),
+            model=args.model,
+            mode=args.mode,
+            lang=args.lang,
+            generate_map=args.generate_map)
     elif args.mode == "explain":
         handle_explain(str(args.repo_path), model=args.model, mode=args.mode, lang=args.lang)
     elif args.mode == "refactor":

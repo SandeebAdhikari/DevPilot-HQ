@@ -8,6 +8,7 @@ from devpilot.log_utils import resolve_log_path
 from devpilot.session_logger import SessionLogger
 from devpilot.interactive import interactive_follow_up
 from devpilot.detect_lang import detect_language_from_path
+from devpilot.repomap_utils import update_repomap
 from typing import Optional
 import re
 
@@ -110,13 +111,18 @@ def get_main_code_sample(repo_path: Path, lang: str = "python", max_lines: int =
     return f"⚠️ No recognized main file found for language: {lang}"
 
 
-def handle_onboard(repo_path_str: str, model: str, mode: str = "onboard", lang=None) -> str:
+def handle_onboard(
+    repo_path_str: str,
+    model: str,
+    mode: str = "onboard",
+    lang: Optional[str] = None,
+    generate_map: bool = False
+) -> str:
     repo_path = Path(repo_path_str).resolve()
 
     if not repo_path.exists():
         console.print(f"[red]Error:[/] Path '{repo_path}' does not exist.")
         return ""
-
 
     lang = lang or detect_language_from_path(repo_path)
     prompt_path = get_prompt_path(mode, lang)
@@ -158,13 +164,13 @@ def handle_onboard(repo_path_str: str, model: str, mode: str = "onboard", lang=N
         console.print("\n[bold green]✅ Onboarding Summary:[/]\n")
         console.print(pretty_response)
 
-    
-    code_sample = get_main_code_sample(repo_path, lang=lang)
     log_path = resolve_log_path(mode="onboard", lang=lang, suppress_prompt=True)
-
     logger = SessionLogger(log_path, use_timestamp=True, format="markdown")
     logger.log_entry(prompt, plain_response)
     logger.save()
+
+    if generate_map and repo_path.is_dir():
+        update_repomap(str(repo_path))
 
     interactive_follow_up(prompt, model, run_ollama, lang=lang)
 

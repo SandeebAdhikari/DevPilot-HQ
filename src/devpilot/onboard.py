@@ -11,6 +11,7 @@ from devpilot.detect_lang import detect_language_from_path
 from devpilot.repomap_utils import update_repomap
 from typing import Optional
 import re
+import json
 
 console = Console()
 
@@ -115,8 +116,7 @@ def handle_onboard(
     repo_path_str: str,
     model: str,
     mode: str = "onboard",
-    lang: Optional[str] = None,
-    generate_map: bool = False
+    lang: Optional[str] = None
 ) -> str:
     repo_path = Path(repo_path_str).resolve()
 
@@ -126,6 +126,12 @@ def handle_onboard(
 
     lang = lang or detect_language_from_path(repo_path)
     prompt_path = get_prompt_path(mode, lang)
+
+    # ✅ Save last used repo path if directory
+    if repo_path.is_dir():
+        Path(".devpilot").mkdir(exist_ok=True)
+        with open(".devpilot/last_used_path.json", "w") as f:
+            json.dump({"repo_path": str(repo_path)}, f)
 
     if repo_path.is_file():
         console.print(f"[green]📄 Analyzing file:[/] {repo_path.name}\n")
@@ -148,6 +154,13 @@ def handle_onboard(
         code_sample = get_main_code_sample(repo_path, lang=lang)
         prompt += f"\n\nHere is a sample of the main code:\n{code_sample}"
 
+        # ✅ Generate repomap silently
+        update_repomap(
+            repo_root=repo_path,
+            repomap_path=Path(".devpilot/repomap.json"),
+            cache_path=Path(".devpilot/repomap_cache.json"),
+        )
+
     console.print(f"\n[dim]--- Prompt Sent to {model} ---[/]")
     console.print(prompt)
 
@@ -168,9 +181,6 @@ def handle_onboard(
     logger = SessionLogger(log_path, use_timestamp=True, format="markdown")
     logger.log_entry(prompt, plain_response)
     logger.save()
-
-    if generate_map and repo_path.is_dir():
-        update_repomap(str(repo_path))
 
     interactive_follow_up(prompt, model, run_ollama, lang=lang)
 

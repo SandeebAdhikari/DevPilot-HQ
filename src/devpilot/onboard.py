@@ -10,6 +10,7 @@ from devpilot.interactive import interactive_follow_up
 from devpilot.detect_lang import detect_language_from_path
 from devpilot.repomap_utils import update_repomap
 from typing import Optional
+from typing import List
 import re
 import json
 
@@ -17,7 +18,7 @@ console = Console()
 
 def markdown_to_text(md: str) -> str:
     lines = md.splitlines()
-    output = []
+    output: list[str] = []
 
     for line in lines:
         if line.startswith("# "):
@@ -59,10 +60,12 @@ def build_file_tree(base_path: Path) -> Tree:
     add_nodes(base_path, tree)
     return tree
 
-def render_file_tree_to_text(base_path: Path) -> str:
-    output = []
 
-    def walk(path: Path, prefix=""):
+
+def render_file_tree_to_text(base_path: Path) -> str:
+    output: List[str] = []
+
+    def walk(path: Path, prefix: str = ""):
         try:
             entries = sorted(path.iterdir(), key=lambda e: (not e.is_dir(), e.name.lower()))
             for i, entry in enumerate(entries):
@@ -125,7 +128,7 @@ def handle_onboard(
         return ""
 
     lang = lang or detect_language_from_path(repo_path)
-    prompt_path = get_prompt_path(mode, lang)
+    prompt_path = get_prompt_path(mode)
 
     # ✅ Save last used repo path if directory
     if repo_path.is_dir():

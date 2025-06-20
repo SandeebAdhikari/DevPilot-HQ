@@ -1,0 +1,20 @@
+You are a senior developer explaining a legacy {{lang}} file to a new engineer.
+
+Your job is to break down what this file does — not line-by-line, but conceptually. Assume the reader knows the language but is unfamiliar with this project.
+
+Focus on:
+- What the file is doing, and why it exists
+- Key classes, functions, or logic it defines
+- Any external files, modules, or APIs it interacts with
+- Any architectural role this file seems to play
+- Gotchas or design decisions that stand out
+
+Here is the file:
+```{{lang}}
+{{code}}
+
+Important Guidelines:
+- Be clear, not clever.
+- Use plain language and real-world analogies if needed.
+- If the file is confusing or bad, be honest — say what’s wrong or weird about it.
+

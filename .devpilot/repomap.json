@@ -1,62 +1,97 @@
 {
-  "next-env.d.ts": {
+  "tailwind.config.js": {
     "language": "javascript",
     "functions": {},
     "classes": {},
     "default_export": null,
-    "path": "/Users/sandeebadhikari/Documents/metric-care-fe/next-env.d.ts"
+    "path": "/Users/sandeebadhikari/Documents/tic_tac_toe/tailwind.config.js"
   },
-  "tailwind.config.ts": {
+  "vite.config.js": {
     "language": "javascript",
     "functions": {},
     "classes": {},
     "default_export": null,
-    "path": "/Users/sandeebadhikari/Documents/metric-care-fe/tailwind.config.ts"
+    "path": "/Users/sandeebadhikari/Documents/tic_tac_toe/vite.config.js"
   },
-  "next.config.ts": {
+  "eslint.config.js": {
     "language": "javascript",
     "functions": {},
     "classes": {},
     "default_export": null,
-    "path": "/Users/sandeebadhikari/Documents/metric-care-fe/next.config.ts"
+    "path": "/Users/sandeebadhikari/Documents/tic_tac_toe/eslint.config.js"
   },
-  "types/index.d.ts": {
+  "postcss.config.js": {
     "language": "javascript",
     "functions": {},
     "classes": {},
     "default_export": null,
-    "path": "/Users/sandeebadhikari/Documents/metric-care-fe/types/index.d.ts"
+    "path": "/Users/sandeebadhikari/Documents/tic_tac_toe/postcss.config.js"
   },
-  "src/app/layout.tsx": {
+  "src/main.jsx": {
+    "language": "javascript",
+    "functions": {},
+    "classes": {},
+    "default_export": null,
+    "path": "/Users/sandeebadhikari/Documents/tic_tac_toe/src/main.jsx"
+  },
+  "src/App.jsx": {
     "language": "javascript",
     "functions": {
-      "RootLayout": {
-        "signature": "function RootLayout(...)"
+      "App": {
+        "signature": "function App(...)"
       }
     },
     "classes": {},
-    "default_export": "RootLayout",
-    "path": "/Users/sandeebadhikari/Documents/metric-care-fe/src/app/layout.tsx"
+    "default_export": null,
+    "path": "/Users/sandeebadhikari/Documents/tic_tac_toe/src/App.jsx"
   },
-  "src/app/signUp/page.tsx": {
+  "src/components/Button_Score.jsx": {
     "language": "javascript",
     "functions": {},
     "classes": {},
     "default_export": null,
-    "path": "/Users/sandeebadhikari/Documents/metric-care-fe/src/app/signUp/page.tsx"
+    "path": "/Users/sandeebadhikari/Documents/tic_tac_toe/src/components/Button_Score.jsx"
   },
-  "src/app/signIn/page.tsx": {
+  "src/components/Button_x_o.jsx": {
     "language": "javascript",
     "functions": {},
     "classes": {},
     "default_export": null,
-    "path": "/Users/sandeebadhikari/Documents/metric-care-fe/src/app/signIn/page.tsx"
+    "path": "/Users/sandeebadhikari/Documents/tic_tac_toe/src/components/Button_x_o.jsx"
   },
-  "src/components/AuthForm.tsx": {
+  "src/components/Announcement_Modal.jsx": {
     "language": "javascript",
     "functions": {},
     "classes": {},
     "default_export": null,
-    "path": "/Users/sandeebadhikari/Documents/metric-care-fe/src/components/AuthForm.tsx"
+    "path": "/Users/sandeebadhikari/Documents/tic_tac_toe/src/components/Announcement_Modal.jsx"
+  },
+  "src/components/Button_Game.jsx": {
+    "language": "javascript",
+    "functions": {},
+    "classes": {},
+    "default_export": null,
+    "path": "/Users/sandeebadhikari/Documents/tic_tac_toe/src/components/Button_Game.jsx"
+  },
+  "src/components/Restart_Modal.jsx": {
+    "language": "javascript",
+    "functions": {},
+    "classes": {},
+    "default_export": null,
+    "path": "/Users/sandeebadhikari/Documents/tic_tac_toe/src/components/Restart_Modal.jsx"
+  },
+  "src/pages/Main_Page.jsx": {
+    "language": "javascript",
+    "functions": {},
+    "classes": {},
+    "default_export": null,
+    "path": "/Users/sandeebadhikari/Documents/tic_tac_toe/src/pages/Main_Page.jsx"
+  },
+  "src/pages/Game_Page.jsx": {
+    "language": "javascript",
+    "functions": {},
+    "classes": {},
+    "default_export": null,
+    "path": "/Users/sandeebadhikari/Documents/tic_tac_toe/src/pages/Game_Page.jsx"
   }
 }

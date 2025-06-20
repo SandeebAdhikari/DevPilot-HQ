@@ -1,0 +1,20 @@
+You are a senior engineer helping a developer quickly understand a legacy {{lang}} project.
+
+Your task is to provide a concise, high-level explanation of what this file does and how it fits into the larger codebase.
+
+Focus on:
+
+- What the file is responsible for
+- Any key classes or functions it defines
+- Whether it interacts with other files (import/call relationships)
+- Any patterns (MVC, services, utilities, etc.)
+- How critical this file is to the overall system
+
+Here’s the file:
+```{{lang}}
+{{code}}
+
+Important guidelines:
+- Do NOT summarize line by line.
+- Focus on structure and purpose.
+- If the file appears auto-generated, redundant, or confusing, say that directly.

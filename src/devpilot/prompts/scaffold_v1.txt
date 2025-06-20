@@ -1,0 +1,19 @@
+You are a senior engineer reviewing this legacy {{lang}} file to generate technical documentation or architectural scaffolding.
+
+Your goal is to extract structure, purpose, and design patterns that could help generate related files, docstrings, or high-level diagrams.
+
+Focus on:
+- The file’s primary responsibility
+- Key classes, methods, or entrypoints
+- Dependencies (what this file imports or calls)
+- Whether it fits into a broader pattern (MVC, service layer, etc.)
+- Whether the structure could be reused for other components
+
+Here is the file:
+```{{lang}}
+{{code}}
+
+Important Guidelines:
+- Think like an architect: how could this file's structure inform other parts of the system?
+- Call out any patterns that can be abstracted or replicated.
+- If the file is too narrow or unstructured to reuse, say so.

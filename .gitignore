@@ -60,4 +60,5 @@ __pypackages__/
 .devpilot
 docs/generated/
 logs/
+bsdk
 

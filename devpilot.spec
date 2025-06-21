@@ -3,7 +3,9 @@
 from PyInstaller.utils.hooks import collect_data_files
 
 # Include all .txt files from the prompts/ folder
-datas = [("prompts/*.txt", "prompts")]
+datas = [
+    ('src/devpilot/prompts/*.txt', 'devpilot/prompts'),
+]
 
 a = Analysis(
     ['src/devpilot/onboarder.py'],

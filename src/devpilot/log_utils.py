@@ -1,9 +1,10 @@
 from pathlib import Path
 from rich.console import Console
-
 console = Console()
 
-def resolve_log_path(mode: str, log_path=None, lang: str = "", suppress_prompt: bool = False) -> Path:
+from typing import Optional
+
+def resolve_log_path(mode: str, log_path: Optional[str] = None, lang: str = "", suppress_prompt: bool = False) -> Path:
     """
     Resolve the path for the log file based on mode, language, or user-specified path.
     Defaults to ~/Documents/{mode}_{lang}.txt if unspecified.
@@ -32,4 +33,6 @@ def resolve_log_path(mode: str, log_path=None, lang: str = "", suppress_prompt: 
     user_input = input(f"Enter path [press Enter to use default: {default_path}]: ").strip()
 
     return Path(user_input).expanduser().resolve() if user_input else default_path
+
+
 

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "devpilot-hq"
-version = "1.0.1"
+version = "1.0.2"
 description = "AI-powered CLI for onboarding, explaining, and refactoring legacy codebases."
 readme = "README.md"
 requires-python = ">=3.7"
@@ -42,4 +42,5 @@ Homepage = "https://github.com/SandeebAdhikari/DevPilot-HQ"
 Issues = "https://github.com/SandeebAdhikari/DevPilot-HQ/issues"
 Changelog = "https://github.com/SandeebAdhikari/DevPilot-HQ/releases"
 
-
+[tool.pytest.ini_options]
+pythonpath = ["src"]

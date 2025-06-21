@@ -1,11 +1,19 @@
-from devpilot.prompt import get_prompt_path
-from pathlib import Path
+from devpilot.prompt import load_prompt_template, get_prompt_path
 
-def test_prompt_path_python_explain():
-    result = get_prompt_path("explain")
-    assert Path(result).name == "explain_prompt.txt"
+def test_prompt_rendering_with_code():
+    code_sample = "def add(a, b): return a + b"
+    prompt_path = get_prompt_path("explain")
 
-def test_prompt_path_react_fallback():
-    result = get_prompt_path("refactor")
-    assert Path(result).name in {"refactor_react_prompt.txt", "refactor_prompt.txt"}
+    # Call updated load_prompt_template with explicit placeholders
+    rendered = load_prompt_template(
+        prompt_path,
+        code=code_sample,               
+        lang="python",                 
+        repomap_summary=code_sample     
+    )
 
+    # Ensure no unreplaced placeholders remain
+    assert "{{" not in rendered
+
+    # Ensure content was injected correctly
+    assert "def add" in rendered

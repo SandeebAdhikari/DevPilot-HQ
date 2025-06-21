@@ -11,13 +11,13 @@ fi
 
 # Update version in pyproject.toml
 echo "🔄 Updating version to $VERSION in pyproject.toml..."
-sed -i.bak "s/^version = \".*\"/version = \"$VERSION\"/" pyproject.toml
+sed -i.bak "/^\[project\]/,/^\[/ s/^version = \".*\"/version = \"$VERSION\"/" pyproject.toml
 rm pyproject.toml.bak
 
 # Build the package
 echo "🔨 Building package..."
 rm -rf dist/
-python -m build
+python3 -m build
 
 # Commit and tag
 echo -e "\n\n📦 Committing and tagging v$VERSION..."

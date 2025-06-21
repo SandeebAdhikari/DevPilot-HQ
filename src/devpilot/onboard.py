@@ -3,15 +3,13 @@ from rich.tree import Tree
 from rich.console import Console
 from rich.markdown import Markdown
 from pathlib import Path
-from devpilot.prompt import get_prompt_path
 from devpilot.log_utils import resolve_log_path
 from devpilot.session_logger import SessionLogger
 from devpilot.interactive import interactive_follow_up
-from devpilot.detect_lang import detect_language_from_path
+from devpilot.detect_lang import detect_language_from_path, infer_repo_language
 from devpilot.repomap_utils import update_repomap
 from typing import Optional
 from typing import List
-import re
 import json
 
 console = Console()
@@ -36,12 +34,6 @@ def markdown_to_text(md: str) -> str:
 
     return "\n".join(output)
 
-def load_prompt_template(prompt_path: Path, content: str) -> str:
-    try:
-        template = prompt_path.read_text()
-        return template.replace("{{content}}", content).strip()
-    except FileNotFoundError:
-        return f"❌ Prompt template not found at {prompt_path}"
 
 def build_file_tree(base_path: Path) -> Tree:
     tree = Tree(f":file_folder: [bold blue]{base_path.name}[/]", guide_style="bold bright_blue")
@@ -82,45 +74,15 @@ def render_file_tree_to_text(base_path: Path) -> str:
     return "\n".join(output)
 
 
-def get_main_code_sample(repo_path: Path, lang: str = "python", max_lines: int = 20) -> str:
-    """
-    Tries to find a primary code file for a given language and returns the top lines.
-    
-    Args:
-        repo_path (Path): Root of the codebase.
-        lang (str): Programming language or framework (e.g., python, java, react, c).
-        max_lines (int): Number of lines to preview.
-
-    Returns:
-        str: Code sample or fallback message.
-    """
-    main_files_by_lang = {
-        "python": ["main.py", "manage.py", "app.py"],
-        "react": ["src/index.js", "src/index.jsx", "src/main.tsx"],
-        "java": ["Main.java", "App.java", "src/Main.java"],
-        "c": ["main.c", "main.cpp", "src/main.c", "src/main.cpp"]
-    }
-
-    candidates = main_files_by_lang.get(lang.lower(), [])
-
-    for relative_path in candidates:
-        file_path = repo_path / relative_path
-        if file_path.exists():
-            try:
-                with open(file_path, "r", encoding="utf-8") as f:
-                    return "\n".join(f.readlines()[:max_lines])
-            except Exception as e:
-                return f"⚠️ Failed to read {relative_path}: {e}"
-
-    return f"⚠️ No recognized main file found for language: {lang}"
-
-
 def handle_onboard(
     repo_path_str: str,
     model: str,
     mode: str = "onboard",
     lang: Optional[str] = None
 ) -> str:
+    from devpilot.prompt_helpers import build_onboard_prompt_from_repomap
+    from devpilot.prompt import get_prompt_path, load_prompt_template
+
     repo_path = Path(repo_path_str).resolve()
 
     if not repo_path.exists():
@@ -128,41 +90,53 @@ def handle_onboard(
         return ""
 
     lang = lang or detect_language_from_path(repo_path)
-    prompt_path = get_prompt_path(mode)
 
-    # ✅ Save last used repo path if directory
     if repo_path.is_dir():
         Path(".devpilot").mkdir(exist_ok=True)
         with open(".devpilot/last_used_path.json", "w") as f:
             json.dump({"repo_path": str(repo_path)}, f)
 
-    if repo_path.is_file():
+        console.print(f"[green]📁 Scanning directory:[/] {repo_path}\n")
+        tree = build_file_tree(repo_path)
+        console.print(tree)
+
+        update_repomap(
+            repo_root=repo_path,
+            repomap_path=Path(".devpilot/repomap.json"),
+            cache_path=Path(".devpilot/repomap_cache.json"),
+        )
+
+        console.print("\n[green]🧠 Building prompt from repomap...[/]")
+
+        if not lang:
+            with open(".devpilot/repomap.json", "r", encoding="utf-8") as f:
+                repomap_data = json.load(f)
+            lang = infer_repo_language(repomap_data)
+            console.print(f"[cyan]🔎 Inferred language:[/] {lang}")
+
+        repomap_summary_str, _ = build_onboard_prompt_from_repomap(
+            Path(".devpilot/repomap.json"),
+            relmap_path=Path(".devpilot/relmap.json"),
+            lang=lang
+        )
+
+        
+        prompt_path = get_prompt_path(mode)
+        prompt = load_prompt_template(prompt_path, content=repomap_summary_str, lang=lang)
+
+    elif repo_path.is_file():
         console.print(f"[green]📄 Analyzing file:[/] {repo_path.name}\n")
         try:
             file_content = repo_path.read_text(encoding="utf-8")
         except Exception as e:
             console.print(f"[red]Error reading file:[/] {e}")
             return ""
-        prompt = load_prompt_template(prompt_path, file_content)
+        prompt_path = get_prompt_path(mode)
+        prompt = load_prompt_template(prompt_path, content=file_content, lang=lang)
 
     else:
-        console.print(f"[green]📁 Scanning directory:[/] {repo_path}\n")
-        tree = build_file_tree(repo_path)
-        console.print(tree)
-
-        console.print("\n[green]🧠 Generating prompt for local LLM...[/]")
-        file_tree_text = render_file_tree_to_text(repo_path)
-        prompt = load_prompt_template(prompt_path, file_tree_text)
-
-        code_sample = get_main_code_sample(repo_path, lang=lang)
-        prompt += f"\n\nHere is a sample of the main code:\n{code_sample}"
-
-        # ✅ Generate repomap silently
-        update_repomap(
-            repo_root=repo_path,
-            repomap_path=Path(".devpilot/repomap.json"),
-            cache_path=Path(".devpilot/repomap_cache.json"),
-        )
+        console.print(f"[red]Error:[/] '{repo_path}' is neither file nor directory.")
+        return ""
 
     console.print(f"\n[dim]--- Prompt Sent to {model} ---[/]")
     console.print(prompt)
@@ -184,6 +158,12 @@ def handle_onboard(
     logger = SessionLogger(log_path, use_timestamp=True, format="markdown")
     logger.log_entry(prompt, plain_response)
     logger.save()
+
+    if not lang:
+        with open(".devpilot/repomap.json", "r", encoding="utf-8") as f:
+            repomap_data = json.load(f)
+        lang = infer_repo_language(repomap_data)
+        console.print(f"[cyan]🔎 Inferred language:[/] {lang}")
 
     interactive_follow_up(prompt, model, run_ollama, lang=lang)
 

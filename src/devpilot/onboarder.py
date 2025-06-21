@@ -4,13 +4,10 @@ from devpilot.onboard import handle_onboard
 from devpilot.explain import handle_explain
 from devpilot.refactor import handle_refactor
 from devpilot.repomap_utils import update_repomap
-from devpilot.constants import REPO_MAP_PATH, REPO_CACHE_PATH
 import argparse
 import json
 
 console = Console()
-
-LAST_USED_PATH = Path(".devpilot/last_used_path.json")
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -97,20 +94,23 @@ def main():
     args = parse_args()
 
     if args.relmap:
+        from devpilot.constants import REPO_MAP_PATH, REL_MAP_PATH
         if not REPO_MAP_PATH.exists():
             console.print("[red]❌ repomap.json not found. Run onboarding first.")
             return
 
         console.print("[blue]🔍 Building relational map and scaffold docs...[/]")
-        from devpilot.rel_map import scaffold_docs, summarize_docs
+        from devpilot.rel_map import build_relational_map, scaffold_docs, summarize_docs
         from devpilot.session_logger import log_session
-        from pathlib import Path
 
         try:
-            scaffold_docs(REPO_MAP_PATH)
-            summarize_docs(REPO_MAP_PATH, model=args.model)
+            build_relational_map(REPO_MAP_PATH)
 
-            summary_path = Path(".devpilot/README_SUMMARY.md")
+            scaffold_docs(REL_MAP_PATH)
+
+            summarize_docs(REL_MAP_PATH, model=args.model)
+
+            summary_path = REL_MAP_PATH.parent / "README_SUMMARY.md"
             if summary_path.exists():
                 content = summary_path.read_text(encoding="utf-8")
                 log_session(
@@ -120,7 +120,8 @@ def main():
                     suffix="md"
                 )
             else:
-                ai_path = Path(".devpilot/README_AI.md")
+                from pathlib import Path
+                ai_path = Path(REL_MAP_PATH).parent / "README_AI.md"
                 if ai_path.exists():
                     content = ai_path.read_text(encoding="utf-8")
                     log_session(
@@ -134,16 +135,15 @@ def main():
             console.print(f"[red]❌ Failed during relmap processing:[/] {e}")
         return
 
-                    
-
-
     if args.scaffold_docs:
-        from devpilot.session_logger import get_last_used_repo
         from devpilot.rel_map import scaffold_docs
         try:
-            repo_root = get_last_used_repo()
-            repofile = repo_root / ".devpilot/repomap.json"
-            doc = scaffold_docs(repofile)
+            from pathlib import Path
+            relmap_path = Path(".devpilot/relmap.json")
+            if not relmap_path.exists():
+                console.print("[red]❌ relmap.json not found.[/]")
+                return
+            doc = scaffold_docs(relmap_path)
             console.print(doc)
         except Exception as e:
             console.print(f"[red]❌ Failed to scaffold docs:[/] {e}")
@@ -167,6 +167,7 @@ def main():
        return
  
     if args.clean and args.repo_path is None:
+        from devpilot.constants import REPO_MAP_PATH, REPO_CACHE_PATH
         for path in [REPO_MAP_PATH, REPO_CACHE_PATH]:
             try:
                 path.write_text("{}")
@@ -179,6 +180,7 @@ def main():
     if args.generate_map and args.repo_path is None:
         try:
             from pathlib import Path
+            from devpilot.constants import REPO_MAP_PATH, REPO_CACHE_PATH, LAST_USED_PATH
             with open(LAST_USED_PATH) as f:
                 repo_path: Path = Path(json.load(f)["repo_path"])
         except Exception:
@@ -200,36 +202,57 @@ def main():
         return
 
     if args.preview_prompt:
-        from devpilot.prompt import get_prompt_path
-        from devpilot.detect_lang import detect_language_from_path
-        if not args.repo_path or not args.mode:
-            console.print("[red]❌ --preview-prompt requires both --mode and <repo_path>[/]")
-            return
-        from pathlib import Path
-        filepath = Path(args.repo_path)
-        if not filepath.exists():
-            console.print(f"[red]❌ File not found:[/] {filepath}")
-            return
+        from devpilot.prompt import get_prompt_path, load_prompt_template
 
-        code = filepath.read_text()
-        lang = args.lang or detect_language_from_path(filepath)
+        # Onboarding requires existing maps
+        if args.mode == "onboard":
+            from pathlib import Path
+            from devpilot.prompt_helpers import build_onboard_prompt_from_repomap
+            repomap_path = Path(".devpilot/repomap.json")
+            relmap_path = Path(".devpilot/relmap.json")
+            if not repomap_path.exists():
+                console.print("[red]❌ repomap.json not found. Run --generate-map first.[/]")
+                return
+            scaffold, _ = build_onboard_prompt_from_repomap(repomap_path, relmap_path)
+            prompt_path = get_prompt_path("onboard")
+            final_prompt = load_prompt_template(prompt_path, content=scaffold, lang=args.lang or "plaintext")
 
-        prompt_path = get_prompt_path(args.mode)
-        template = prompt_path.read_text()
-        final_prompt = template.replace("{{lang}}", lang).replace("{{code}}", code)
+        else:
+            if not args.repo_path:
+                console.print("[red]❌ --preview-prompt requires <repo_path> for explain/refactor.[/]")
+                return
+            from pathlib import Path
+            file_path = Path(args.repo_path)
+            if not file_path.exists():
+                console.print(f"[red]❌ File not found:[/] {file_path}")
+                return
+            code = file_path.read_text()
+            prompt_path = get_prompt_path(args.mode)
+            final_prompt = load_prompt_template(prompt_path, content=code, lang=args.lang or "plaintext")
 
         console.rule(f"[bold cyan]🔍 Previewing Prompt: {prompt_path.name}")
         console.print(final_prompt)
         return
 
 
+
     if args.mode == "onboard":
         handle_onboard(
-            str(args.repo_path),
-            model=args.model,
-            mode=args.mode,
-            lang=args.lang
-        )
+        str(args.repo_path),
+        model=args.model,
+        mode=args.mode,
+        lang=args.lang
+    )
+        try:
+            from devpilot.rel_map import scaffold_docs, summarize_docs
+            from devpilot.constants import REPO_MAP_PATH
+            repofile = REPO_MAP_PATH
+            scaffold_docs(repofile)
+            summarize_docs(repofile, model=args.model)
+            
+        except Exception as e:
+            console.print(f"[yellow]⚠️ Relmap generation failed:[/] {e}")
+
     elif args.mode == "explain":
         handle_explain(str(args.repo_path), model=args.model, mode=args.mode, lang=args.lang)
     elif args.mode == "refactor":

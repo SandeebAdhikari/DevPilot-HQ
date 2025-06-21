@@ -22,3 +22,32 @@ def get_prompt_path(mode: str, version: int = 1) -> Path:
 
     return PROMPT_DIR / f"{mode}_v{version}.txt"
 
+
+
+def load_prompt_template(prompt_path: Path, **kwargs: str) -> str:
+    """
+    Loads a prompt template and substitutes any {{placeholder}} in the file
+    with corresponding values provided via kwargs.
+
+    Args:
+        prompt_path (Path): Path to the prompt template file
+        **kwargs: Dictionary of placeholder names and values to substitute
+
+    Returns:
+        str: Fully rendered template string
+
+    Raises:
+        ValueError: If any placeholders remain unreplaced (i.e., "{{" still exists)
+    """
+    try:
+        template = prompt_path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return f"❌ Prompt template not found: {prompt_path}"
+
+    for key, value in kwargs.items():
+        template = template.replace(f"{{{{{key}}}}}", value)
+
+    if "{{" in template:
+        raise ValueError(f"❌ Unreplaced placeholder found in template: {prompt_path}")
+
+    return template.strip()

@@ -58,6 +58,7 @@ __pypackages__/
 
 # DevPilot custom
 .onboarder_log.txt
+.devpilot
 docs/generated/
 logs/
 

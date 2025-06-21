@@ -10,7 +10,6 @@ def detect_language_from_path(path: Path) -> str:
     Returns:
         str: Detected language string (e.g., "python", "react", "java", "c", "cpp")
     """
-    # --- 1. Detect from file extension ---
     if path.is_file():
         suffix = path.suffix.lower()
         if suffix == ".py":
@@ -24,7 +23,7 @@ def detect_language_from_path(path: Path) -> str:
         elif suffix == ".cpp":
             return "cpp"
 
-    # --- 2. Detect from project structure ---
+    
     elif path.is_dir():
         all_files = list(path.rglob("*"))
         file_names = {f.name.lower() for f in all_files if f.is_file()}
@@ -54,6 +53,24 @@ def detect_language_from_path(path: Path) -> str:
         if ".py" in suffixes:
             return "python"
 
-    # --- 3. Fallback ---
-    return "python"  # Safe default
+    return "python"  
+
+def infer_repo_language(repomap: dict[str, dict[str, str]]) -> str:
+    """
+    Infers the dominant programming language used in the repository based on repomap.
+
+    Returns:
+        str: Language with highest number of files.
+    """
+    lang_count: dict[str, int] = {}
+
+    for _, data in repomap.items():
+        lang = str(data.get("language", "plaintext")).lower()
+        lang_count[lang] = lang_count.get(lang, 0) + 1
+
+    if not lang_count:
+        return "plaintext"
+
+    # Return most common language
+    return max(lang_count.items(), key=lambda x: x[1])[0]
 

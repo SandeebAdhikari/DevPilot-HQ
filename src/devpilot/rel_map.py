@@ -25,7 +25,7 @@ def parse_python_symbols(file_path: Path) -> Dict[str, list[str]]:
         code = file_path.read_text(encoding="utf-8")
         tree = ast.parse(code)
     except Exception as e:
-        print(f"⚠️ Skipping {file_path} — AST parse failed: {e}")
+        #print(f"⚠️ Skipping {file_path} — AST parse failed: {e}")
         return {"classes": [], "functions": [], "imports": [], "calls": []}
 
     for node in ast.walk(tree):
@@ -97,11 +97,11 @@ def extract_relationships(repofile: Path = REL_MAP_PATH) -> Dict[str, Set[str]]:
         calls_raw = metadata.get("calls")
 
         if not isinstance(imports_raw, list):
-            print(f"⚠️ 'imports' in {file_path} is not a list: {type(imports_raw)}. Using empty list.")
+            #print(f"⚠️ 'imports' in {file_path} is not a list: {type(imports_raw)}. Using empty list.")
             imports_raw = []
 
         if not isinstance(calls_raw, list):
-            print(f"⚠️ 'calls' in {file_path} is not a list: {type(calls_raw)}. Using empty list.")
+            #print(f"⚠️ 'calls' in {file_path} is not a list: {type(calls_raw)}. Using empty list.")
             calls_raw = []
 
         # Filter only string elements and build sets
@@ -112,19 +112,19 @@ def extract_relationships(repofile: Path = REL_MAP_PATH) -> Dict[str, Set[str]]:
 
     return relations
 
-def scaffold_docs(repofile: Path = REL_MAP_PATH) -> str:
+def scaffold_docs(relmap_path: Path = REL_MAP_PATH) -> str:
     """
-    Builds and saves a high-level Markdown doc from relmap.
+    Builds and saves a high-level Markdown doc from relmap.json.
     Output saved to .devpilot/README_AI.md.
     """
-    if not repofile.exists():
+    if not relmap_path.exists():
         return "❌ relmap.json not found."
 
-    repomap = load_repomap(repofile)
-    relations = extract_relationships(repofile)
+    relmap_data = load_repomap(relmap_path)
+    relations = extract_relationships(relmap_path)
     lines = ["# Project Scaffold\n", "## Key Files and Relationships\n"]
 
-    for file, meta in repomap.items():
+    for file, meta in relmap_data.items():
         lines.append(f"- {file}")
 
         from typing import cast
@@ -145,10 +145,9 @@ def scaffold_docs(repofile: Path = REL_MAP_PATH) -> str:
 
     output = "\n".join(lines)
 
-    doc_path = repofile.parent / "README_AI.md"
+    output_path = relmap_path.parent / "README_AI.md"
     try:
-        doc_path.write_text(output, encoding="utf-8")
-        print(f"\n✅ Scaffold saved to: {doc_path}")
+        output_path.write_text(output, encoding="utf-8")
     except Exception as e:
         print(f"❌ Failed to write scaffold: {e}")
 

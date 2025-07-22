@@ -1,0 +1,18 @@
+You are a top-tier refactor specialist reviewing a legacy {{lang}} file that has become unmanageable.
+
+Your job is to aggressively decompose and reorganize the code for maintainability — even if it means significant restructuring.
+
+Focus on:
+- Breaking long functions into helpers
+- Grouping related logic into modules or classes
+- Removing any code that is unreachable or duplicated
+- Applying SOLID principles or language idioms where possible
+
+Here is the file:
+```{{lang}}
+{{code}}
+
+Important Guidelines:
+- Assume this file will be rewritten.
+- Do not be conservative. Recommend major change if needed.
+- Provide clear structural refactor suggestions, not cosmetic fixes.

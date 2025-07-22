@@ -14,6 +14,28 @@ import json
 
 console = Console()
 
+def resolve_language(repo_path: Path, cli_lang: Optional[str]) -> str:
+    if cli_lang:
+        console.print(f"[green]✅ Language from CLI:[/] {cli_lang}")
+        return cli_lang
+
+    repomap_file = repo_path / ".devpilot" / "repomap.json"
+    if repomap_file.exists():
+        try:
+            with open(repomap_file, "r", encoding="utf-8") as f:
+                repomap = json.load(f)
+            lang = infer_repo_language(repomap)
+            if lang and lang != "plaintext":
+                console.print(f"[cyan]🔎 Inferred from repomap:[/] {lang}")
+                return lang
+        except Exception as e:
+            console.print(f"[red]⚠️ Error reading repomap:[/] {e}")
+
+    lang = detect_language_from_path(repo_path)
+    console.print(f"[yellow]⚠️ Fallback: inferred from file path:[/] {lang}")
+    return lang
+
+
 def markdown_to_text(md: str) -> str:
     lines = md.splitlines()
     output: list[str] = []
@@ -89,7 +111,7 @@ def handle_onboard(
         console.print(f"[red]Error:[/] Path '{repo_path}' does not exist.")
         return ""
 
-    lang = lang or detect_language_from_path(repo_path)
+    lang = resolve_language(repo_path, cli_lang=lang)
 
     if repo_path.is_dir():
         Path(".devpilot").mkdir(exist_ok=True)
@@ -108,11 +130,6 @@ def handle_onboard(
 
         console.print("\n[green]🧠 Building prompt from repomap...[/]")
 
-        if not lang:
-            with open(".devpilot/repomap.json", "r", encoding="utf-8") as f:
-                repomap_data = json.load(f)
-            lang = infer_repo_language(repomap_data)
-            console.print(f"[cyan]🔎 Inferred language:[/] {lang}")
 
         repomap_summary_str, _ = build_onboard_prompt_from_repomap(
             Path(".devpilot/repomap.json"),
@@ -122,7 +139,7 @@ def handle_onboard(
 
         
         prompt_path = get_prompt_path(mode)
-        prompt = load_prompt_template(prompt_path, content=repomap_summary_str, lang=lang)
+        prompt = load_prompt_template(prompt_path, repomap_summary=repomap_summary_str, lang=lang)
 
     elif repo_path.is_file():
         console.print(f"[green]📄 Analyzing file:[/] {repo_path.name}\n")
@@ -158,12 +175,6 @@ def handle_onboard(
     logger = SessionLogger(log_path, use_timestamp=True, format="markdown")
     logger.log_entry(prompt, plain_response)
     logger.save()
-
-    if not lang:
-        with open(".devpilot/repomap.json", "r", encoding="utf-8") as f:
-            repomap_data = json.load(f)
-        lang = infer_repo_language(repomap_data)
-        console.print(f"[cyan]🔎 Inferred language:[/] {lang}")
 
     interactive_follow_up(prompt, model, run_ollama, lang=lang)
 

@@ -2,7 +2,6 @@ import os
 import subprocess
 import requests
 import sys
-import time
 import json
 from rich.console import Console 
 from typing import List

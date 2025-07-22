@@ -1,0 +1,19 @@
+You are a senior systems engineer reviewing a legacy {{lang}} file for safe refactoring.
+
+Your goal is to improve code structure and readability while minimizing pointer misuse or memory hazards.
+
+Focus on:
+- Functions that should be broken apart
+- Dangerous pointer manipulation
+- Manual memory management that can be wrapped
+- Overuse of global variables
+- Clear separation of concerns (e.g. data vs logic)
+
+Here is the file:
+```{{lang}}
+{{code}}
+
+Important Guidelines:
+- Never change functionality.
+- Be explicit about unsafe patterns.
+- Recommend helper functions or macros where appropriate.

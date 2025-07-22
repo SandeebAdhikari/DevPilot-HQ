@@ -8,7 +8,7 @@ from devpilot.ollama_infer import run_ollama
 
 REPO_MAP_PATH = Path(".devpilot/repomap.json")
 REL_MAP_PATH = Path(".devpilot/relmap.json")
-
+     
 
 def load_repomap(repofile: Path) -> Dict[str, dict[str, object]]:
     with repofile.open("r", encoding="utf-8") as f:

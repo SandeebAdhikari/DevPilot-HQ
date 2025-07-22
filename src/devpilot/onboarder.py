@@ -242,7 +242,7 @@ def main():
         model=args.model,
         mode=args.mode,
         lang=args.lang
-    )
+        )
         try:
             from devpilot.rel_map import scaffold_docs, summarize_docs
             from devpilot.constants import REPO_MAP_PATH

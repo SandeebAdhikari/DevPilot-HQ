@@ -2,64 +2,44 @@
 
 ## Key Files and Relationships
 
-- Post_blog_Django_Project/manage.py
+- tests/test_prompt.py
 
-- music_controller/manage.py
+- tests/__init__.py
 
-- music_controller/music_controller/asgi.py
+- tests/test_infer_repo_language.py
 
-- music_controller/music_controller/__init__.py
+- tests/test_log_utils.py
 
-- music_controller/music_controller/settings.py
+- tests/test_detect_language_from_path.py
 
-- music_controller/music_controller/urls.py
+- src/devpilot/onboard.py
 
-- music_controller/music_controller/wsgi.py
+- src/devpilot/detect_lang.py
 
-- music_controller/api/models.py
+- src/devpilot/refactor.py
 
-- music_controller/api/__init__.py
+- src/devpilot/log_utils.py
 
-- music_controller/api/apps.py
+- src/devpilot/session_logger.py
 
-- music_controller/api/admin.py
+- src/devpilot/prompt_helpers.py
 
-- music_controller/api/tests.py
+- src/devpilot/constants.py
 
-- music_controller/api/urls.py
+- src/devpilot/__init__.py
 
-- music_controller/api/views.py
+- src/devpilot/interactive.py
 
-- music_controller/api/migrations/__init__.py
+- src/devpilot/repomap_utils.py
 
-- Post_blog_Django_Project/scheduler/tempCodeRunnerFile.py
+- src/devpilot/prompt.py
 
-- Post_blog_Django_Project/scheduler/models.py
+- src/devpilot/onboarder.py
 
-- Post_blog_Django_Project/scheduler/__init__.py
+- src/devpilot/ollama_infer.py
 
-- Post_blog_Django_Project/scheduler/apps.py
+- src/devpilot/explain.py
 
-- Post_blog_Django_Project/scheduler/forms.py
+- src/devpilot/__main__.py
 
-- Post_blog_Django_Project/scheduler/admin.py
-
-- Post_blog_Django_Project/scheduler/tests.py
-
-- Post_blog_Django_Project/scheduler/urls.py
-
-- Post_blog_Django_Project/scheduler/views.py
-
-- Post_blog_Django_Project/selfProject/asgi.py
-
-- Post_blog_Django_Project/selfProject/__init__.py
-
-- Post_blog_Django_Project/selfProject/settings.py
-
-- Post_blog_Django_Project/selfProject/urls.py
-
-- Post_blog_Django_Project/selfProject/wsgi.py
-
-- Post_blog_Django_Project/scheduler/migrations/__init__.py
-
-- Post_blog_Django_Project/scheduler/migrations/0001_initial.py
+- src/devpilot/rel_map.py

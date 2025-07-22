@@ -1,4 +1,3 @@
-import os
 import json
 import hashlib
 import ast
@@ -85,7 +84,7 @@ def extract_js_metadata(filepath: Path) -> Dict[str, Any]:
         classes = re.findall(r'class\s+(\w+)\s*[{\(]', source)
         default_export = re.findall(r'export\s+default\s+function\s+(\w+)?', source)
 
-        result = {
+        result: Dict[str, Any] = {
             "language": "javascript",
             "functions": {name: {"signature": f"function {name}(...)"} for name in functions},
             "classes": {name: {} for name in classes},
@@ -120,9 +119,9 @@ def update_repomap(
     prev_hashes = load_json(cache_path)
     repomap = load_json(repomap_path)
 
-    new_hashes = {}
+    new_hashes: Dict[str, str] = {}
     changed_count = 0
-    seen_files = set()
+    seen_files: set[str] = set()
 
     for file in repo_root.rglob("*"):
         if file.is_dir():

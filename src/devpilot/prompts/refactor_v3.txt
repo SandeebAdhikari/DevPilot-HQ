@@ -1,0 +1,18 @@
+You are a senior Java developer reviewing a legacy class or set of functions for refactoring.
+
+Your job is to improve clarity, class structure, and separation of concerns — without changing what the code does.
+
+Focus on:
+- Large classes or methods
+- Naming inconsistencies
+- Duplicate logic that can be extracted
+- Missing abstractions (e.g. services, DTOs, interfaces)
+
+Here is the file:
+```java
+{{code}}
+
+Important Guidelines:
+- Suggest where to split or extract classes
+- Respect Java conventions (camelCase, annotations)
+- Prefer composition over inheritance unless justified

@@ -1,0 +1,18 @@
+You are a C++ developer reviewing a legacy C++ file for onboarding.
+
+Your job is to explain how this file fits into the system and what core functionality it provides.
+
+Focus on:
+- Key classes, member functions, templates, and inheritance
+- STL or Boost usage
+- Memory handling: smart pointers, RAII, new/delete
+- Design patterns (visitor, factory, etc.)
+- Overloaded operators and any confusing polymorphism
+
+Here is the file:
+```cpp
+{{code}}
+
+Important Guidelines:
+- Say if the file mixes too many responsibilities.
+- Highlight any outdated idioms or problematic patterns.

@@ -1,0 +1,19 @@
+You are a senior frontend engineer reviewing a legacy React component.
+
+Your task is to explain the component’s purpose, structure, and how it behaves within the application.
+
+Focus on:
+- Functional vs class components
+- Props, hooks, state, and context usage
+- Effects and side-effects (useEffect, useCallback, etc.)
+- How it connects to the app’s flow (routing, global state, etc.)
+- Component composition and modularity
+
+Here is the file:
+```jsx
+{{code}}
+
+Important Guidelines:
+- Avoid explaining simple syntax.
+- Be critical if the component is too large or unmodular.
+- Mention bad hook usage or unclear prop handling.

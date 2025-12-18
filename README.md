@@ -80,10 +80,10 @@ Use `--lang` to override language detection (e.g., `--lang=java`).
 
 DevPilot detects language from file type and uses a mode-specific prompt. Currently supported:
 
-- ✅ Python / Django
-- ✅ React (JSX/TSX)
-- ✅ Java
-- ✅ C / C++
+- Python / Django
+- React (JSX/TSX)
+- Java
+- C / C++
 
 Prompt templates live in the `prompts/` folder. DevPilot dynamically selects the correct one.
 

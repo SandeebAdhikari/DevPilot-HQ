@@ -17,7 +17,7 @@ def handle_refactor(file_path: str, model: str, mode: str = "refactor", lang: Op
     try:
         code = Path(file_path).read_text(encoding="utf-8")
     except Exception as e:
-        return f"❌ Error reading file: {e}"
+        return f"   Error reading file: {e}"
 
     lang = lang or detect_language_from_path(Path(file_path))
 
@@ -35,7 +35,7 @@ def handle_refactor(file_path: str, model: str, mode: str = "refactor", lang: Op
     prompt = load_prompt_template(prompt_path, lang=lang, code=code)
 
     if "{{" in prompt or "}}" in prompt:
-        raise ValueError(f"❌ Unreplaced placeholders in prompt: {prompt_path}")
+        raise ValueError(f"   Unreplaced placeholders in prompt: {prompt_path}")
 
     console.print(f"\n[dim]--- Prompt Sent to {model} ---[/]")
     console.print(prompt)
@@ -46,9 +46,9 @@ def handle_refactor(file_path: str, model: str, mode: str = "refactor", lang: Op
     plain_response = markdown_to_text(response)
 
     if not response.strip():
-        console.print("\n[yellow]⚠️ Model returned no output.[/]")
+        console.print("\n[yellow]  Model returned no output.[/]")
     else:
-        console.print("\n[bold green]✅ Refactor Suggestions:[/]\n")
+        console.print("\n[bold green] Refactor Suggestions:[/]\n")
         console.print(Markdown(response))
 
     log_path = resolve_log_path(mode=mode, lang=lang, suppress_prompt=True)

@@ -25,7 +25,7 @@ def parse_python_symbols(file_path: Path) -> Dict[str, list[str]]:
         code = file_path.read_text(encoding="utf-8")
         tree = ast.parse(code)
     except Exception as e:
-        #print(f"⚠️ Skipping {file_path} — AST parse failed: {e}")
+        #print(f"  Skipping {file_path} — AST parse failed: {e}")
         return {"classes": [], "functions": [], "imports": [], "calls": []}
 
     for node in ast.walk(tree):
@@ -51,7 +51,7 @@ def parse_python_symbols(file_path: Path) -> Dict[str, list[str]]:
                 elif isinstance(node.func, ast.Attribute):
                     calls.add(str(node.func.attr))  # Convert to string
             except Exception as e:
-                print(f"⚠️ Error parsing call in {file_path}: {e}")
+                print(f"  Error parsing call in {file_path}: {e}")
 
     # Now directly sort the sets (all elements are strings)
     return {
@@ -84,7 +84,7 @@ def build_relational_map(repofile: Path = REPO_MAP_PATH) -> None:
         relmap[path_str] = meta
 
     REL_MAP_PATH.write_text(json.dumps(relmap, indent=2), encoding="utf-8")
-    print(f"✅ Relational map saved to: {REL_MAP_PATH}")
+    print(f" Relational map saved to: {REL_MAP_PATH}")
 
 
 def extract_relationships(repofile: Path = REL_MAP_PATH) -> Dict[str, Set[str]]:
@@ -97,11 +97,11 @@ def extract_relationships(repofile: Path = REL_MAP_PATH) -> Dict[str, Set[str]]:
         calls_raw = metadata.get("calls")
 
         if not isinstance(imports_raw, list):
-            #print(f"⚠️ 'imports' in {file_path} is not a list: {type(imports_raw)}. Using empty list.")
+            #print(f"  'imports' in {file_path} is not a list: {type(imports_raw)}. Using empty list.")
             imports_raw = []
 
         if not isinstance(calls_raw, list):
-            #print(f"⚠️ 'calls' in {file_path} is not a list: {type(calls_raw)}. Using empty list.")
+            #print(f"  'calls' in {file_path} is not a list: {type(calls_raw)}. Using empty list.")
             calls_raw = []
 
         # Filter only string elements and build sets
@@ -118,7 +118,7 @@ def scaffold_docs(relmap_path: Path = REL_MAP_PATH) -> str:
     Output saved to .devpilot/README_AI.md.
     """
     if not relmap_path.exists():
-        return "❌ relmap.json not found."
+        return "   relmap.json not found."
 
     relmap_data = load_repomap(relmap_path)
     relations = extract_relationships(relmap_path)
@@ -149,7 +149,7 @@ def scaffold_docs(relmap_path: Path = REL_MAP_PATH) -> str:
     try:
         output_path.write_text(output, encoding="utf-8")
     except Exception as e:
-        print(f"❌ Failed to write scaffold: {e}")
+        print(f"   Failed to write scaffold: {e}")
 
     return output
 
@@ -180,16 +180,16 @@ def summarize_docs(repofile: Path = REL_MAP_PATH, model: str = "llama2") -> str:
             system_prompt=system_prompt
         )
     except Exception as e:
-        print(f"[red]❌ Failed to summarize with LLM:[/] {e}")
+        print(f"[red]   Failed to summarize with LLM:[/] {e}")
         return ""
 
     # Output path
     summary_path = repofile.parent / "README_SUMMARY.md"
     try:
         summary_path.write_text(summary.strip(), encoding="utf-8")
-        print(f"\n✅ Summary saved to: {summary_path}")
+        print(f"\n Summary saved to: {summary_path}")
     except Exception as e:
-        print(f"[red]❌ Failed to write summary:[/] {e}")
+        print(f"[red]   Failed to write summary:[/] {e}")
 
     return summary.strip()
 

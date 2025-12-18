@@ -83,7 +83,7 @@ class SessionLogger:
         """
         Logs an error-like message to console. Optionally appends it to the log file.
         """
-        console.print(f"[bold red]❌ {message}[/]")
+        console.print(f"[bold red]   {message}[/]")
 
         if save and not self.memory_only:
             entry = f"[ERROR] {datetime.now().isoformat() if self.use_timestamp else ''} {message}"
@@ -113,7 +113,7 @@ class SessionLogger:
 
         self.log_path.write_text(joined, encoding="utf-8")
         self._unsaved_count = 0
-        console.print(f"\n[green]✅ Log saved to:[/] {self.log_path}")
+        console.print(f"\n[green] Log saved to:[/] {self.log_path}")
 
     def flush(self):
         """
@@ -178,7 +178,7 @@ def list_logs(show: bool = True) -> List[dict[str, str]]:
     """
     if not LOG_INDEX_PATH.exists():
         if show:
-            console.print("[yellow]⚠️ No logs have been saved yet.[/]")
+            console.print("[yellow]  No logs have been saved yet.[/]")
         return []
 
     try:
@@ -186,7 +186,7 @@ def list_logs(show: bool = True) -> List[dict[str, str]]:
             entries = json.load(f)
     except Exception as e:
         if show:
-            console.print(f"[red]❌ Failed to load log index:[/] {e}")
+            console.print(f"[red]   Failed to load log index:[/] {e}")
         return []
 
     if show:
@@ -220,25 +220,25 @@ def restore_log(session_id: str, show: bool = True) -> Optional[str]:
         str or None: Contents of the log file, or None if not found.
     """
     if not LOG_INDEX_PATH.exists():
-        console.print("[red]❌ No log index found.[/]")
+        console.print("[red]   No log index found.[/]")
         return None
 
     try:
         with LOG_INDEX_PATH.open("r", encoding="utf-8") as f:
             logs = json.load(f)
     except Exception as e:
-        console.print(f"[red]❌ Failed to load log index:[/] {e}")
+        console.print(f"[red]   Failed to load log index:[/] {e}")
         return None
 
     match = next((entry for entry in logs if entry["session_id"] == session_id), None)
 
     if not match:
-        console.print(f"[red]❌ No session found with ID:[/] {session_id}")
+        console.print(f"[red]   No session found with ID:[/] {session_id}")
         return None
 
     log_path = Path(match["path"])
     if not log_path.exists():
-        console.print(f"[red]❌ Log file not found:[/] {log_path}")
+        console.print(f"[red]   Log file not found:[/] {log_path}")
         return None
 
     contents = log_path.read_text(encoding="utf-8")
@@ -260,7 +260,7 @@ def cleanup_logs(older_than_days: int, show: bool = True) -> int:
     """
     if not LOG_INDEX_PATH.exists():
         if show:
-            console.print("[yellow]⚠️ No log index found.[/]")
+            console.print("[yellow]  No log index found.[/]")
         return 0
 
     try:
@@ -268,7 +268,7 @@ def cleanup_logs(older_than_days: int, show: bool = True) -> int:
             logs = json.load(f)
     except Exception as e:
         if show:
-            console.print(f"[red]❌ Failed to read log index:[/] {e}")
+            console.print(f"[red]   Failed to read log index:[/] {e}")
         return 0
 
     threshold = datetime.now().timestamp() - (older_than_days * 86400)
@@ -291,17 +291,17 @@ def cleanup_logs(older_than_days: int, show: bool = True) -> int:
             try:
                 path.unlink()
                 if show:
-                    console.print(f"[red]🗑 Deleted:[/] {path}")
+                    console.print(f"[red]  Deleted:[/] {path}")
             except Exception as e:
                 if show:
-                    console.print(f"[yellow]⚠️ Could not delete {path}:[/] {e}")
+                    console.print(f"[yellow]  Could not delete {path}:[/] {e}")
 
     # Write updated log index
     with LOG_INDEX_PATH.open("w", encoding="utf-8") as f:
         json.dump(kept, f, indent=2)
 
     if show:
-        console.print(f"\n[green]✅ Cleaned {len(removed)} old logs.[/]")
+        console.print(f"\n[green] Cleaned {len(removed)} old logs.[/]")
     return len(removed)
 
 def scaffold_docs(repofile: Path) -> str:
@@ -311,7 +311,7 @@ def scaffold_docs(repofile: Path) -> str:
     from devpilot.rel_map import extract_relationships
 
     if not repofile.exists():
-        return "❌ repomap.json not found."
+        return "   repomap.json not found."
 
     with repofile.open("r", encoding="utf-8") as f:
         repomap = json.load(f)
@@ -388,5 +388,5 @@ def log_session(
         return log_path
 
     except Exception as e:
-        console.print(f"[red]❌ Failed to log session:[/] {e}")
+        console.print(f"[red] Failed to log session:[/] {e}")
         return None

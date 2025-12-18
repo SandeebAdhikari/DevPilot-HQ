@@ -42,12 +42,12 @@ def load_prompt_template(prompt_path: Path, **kwargs: str) -> str:
     try:
         template = prompt_path.read_text(encoding="utf-8")
     except FileNotFoundError:
-        return f"❌ Prompt template not found: {prompt_path}"
+        return f"   Prompt template not found: {prompt_path}"
 
     for key, value in kwargs.items():
         template = template.replace(f"{{{{{key}}}}}", value)
 
     if "{{" in template:
-        raise ValueError(f"❌ Unreplaced placeholder found in template: {prompt_path}")
+        raise ValueError(f"   Unreplaced placeholder found in template: {prompt_path}")
 
     return template.strip()

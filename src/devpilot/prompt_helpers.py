@@ -12,13 +12,13 @@ def build_onboard_prompt_from_repomap(
     lang: Optional[str] = None
 ) -> tuple[str, str]:
     if not repomap_path.exists():
-        return ("❌ repomap.json not found. Run onboarding with --generate-map first.", "plaintext")
+        return ("   repomap.json not found. Run onboarding with --generate-map first.", "plaintext")
 
     try:
         with open(repomap_path, "r", encoding="utf-8") as f:
             repomap = json.load(f)
     except Exception as e:
-        return (f"❌ Failed to load repomap: {e}", "plaintext")
+        return (f"   Failed to load repomap: {e}", "plaintext")
 
     relmap: dict[str, dict[str, list[str]]] = {}
     if relmap_path and relmap_path.exists():

@@ -96,7 +96,7 @@ def main():
     if args.relmap:
         from devpilot.constants import REPO_MAP_PATH, REL_MAP_PATH
         if not REPO_MAP_PATH.exists():
-            console.print("[red]❌ repomap.json not found. Run onboarding first.")
+            console.print("[red]   repomap.json not found. Run onboarding first.")
             return
 
         console.print("[blue]🔍 Building relational map and scaffold docs...[/]")
@@ -132,7 +132,7 @@ def main():
                     )
 
         except Exception as e:
-            console.print(f"[red]❌ Failed during relmap processing:[/] {e}")
+            console.print(f"[red]   Failed during relmap processing:[/] {e}")
         return
 
     if args.scaffold_docs:
@@ -141,12 +141,12 @@ def main():
             from pathlib import Path
             relmap_path = Path(".devpilot/relmap.json")
             if not relmap_path.exists():
-                console.print("[red]❌ relmap.json not found.[/]")
+                console.print("[red]   relmap.json not found.[/]")
                 return
             doc = scaffold_docs(relmap_path)
             console.print(doc)
         except Exception as e:
-            console.print(f"[red]❌ Failed to scaffold docs:[/] {e}")
+            console.print(f"[red]   Failed to scaffold docs:[/] {e}")
         return
 
 
@@ -173,7 +173,7 @@ def main():
                 path.write_text("{}")
                 console.print(f"[green]🧹 Cleared:[/] {path}")
             except Exception as e:
-                console.print(f"[red]❌ Failed to clear {path}:[/] {e}")
+                console.print(f"[red]   Failed to clear {path}:[/] {e}")
         return
 
 
@@ -184,7 +184,7 @@ def main():
             with open(LAST_USED_PATH) as f:
                 repo_path: Path = Path(json.load(f)["repo_path"])
         except Exception:
-            console.print(f"[red]❌ No previous repo path found. Please run onboarding first.")
+            console.print(f"[red]   No previous repo path found. Please run onboarding first.")
             return
 
         update_repomap(
@@ -192,7 +192,7 @@ def main():
             repomap_path=REPO_MAP_PATH,
             cache_path=REPO_CACHE_PATH,
         )
-        console.print("[green]✅ Repomap updated.[/]")
+        console.print("[green] Repomap updated.[/]")
         try:
             view = input("👀 Do you want to view the mapping file now? [y/N] ").strip().lower()
             if view == "y":
@@ -211,7 +211,7 @@ def main():
             repomap_path = Path(".devpilot/repomap.json")
             relmap_path = Path(".devpilot/relmap.json")
             if not repomap_path.exists():
-                console.print("[red]❌ repomap.json not found. Run --generate-map first.[/]")
+                console.print("[red]   repomap.json not found. Run --generate-map first.[/]")
                 return
             scaffold, _ = build_onboard_prompt_from_repomap(repomap_path, relmap_path)
             prompt_path = get_prompt_path("onboard")
@@ -219,12 +219,12 @@ def main():
 
         else:
             if not args.repo_path:
-                console.print("[red]❌ --preview-prompt requires <repo_path> for explain/refactor.[/]")
+                console.print("[red]   --preview-prompt requires <repo_path> for explain/refactor.[/]")
                 return
             from pathlib import Path
             file_path = Path(args.repo_path)
             if not file_path.exists():
-                console.print(f"[red]❌ File not found:[/] {file_path}")
+                console.print(f"[red]   File not found:[/] {file_path}")
                 return
             code = file_path.read_text()
             prompt_path = get_prompt_path(args.mode)
@@ -251,14 +251,14 @@ def main():
             summarize_docs(repofile, model=args.model)
             
         except Exception as e:
-            console.print(f"[yellow]⚠️ Relmap generation failed:[/] {e}")
+            console.print(f"[yellow]  Relmap generation failed:[/] {e}")
 
     elif args.mode == "explain":
         handle_explain(str(args.repo_path), model=args.model, mode=args.mode, lang=args.lang)
     elif args.mode == "refactor":
         handle_refactor(str(args.repo_path), model=args.model, mode=args.mode, lang=args.lang)
     else:
-        console.print(f"[red]❌ Unknown mode:[/] {args.mode}")
+        console.print(f"[red]   Unknown mode:[/] {args.mode}")
 
 if __name__ == "__main__":
     main()

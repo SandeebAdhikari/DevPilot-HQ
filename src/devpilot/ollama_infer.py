@@ -33,7 +33,7 @@ def run_ollama(
     ollama_host = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 
     if len(prompt) > 4000:
-        console.print(f"[yellow]⚠️ Prompt may be too long. Truncating to ensure responsiveness.[/]")
+        console.print(f"[yellow]  Prompt may be too long. Truncating to ensure responsiveness.[/]")
         prompt = prompt[-4000:]
 
     # Combine system + user prompt
@@ -65,7 +65,7 @@ def run_ollama(
             return data.get("response", "").strip()
 
     except Exception as e:
-        console.print(f"\n[⚠️] Ollama HTTP API failed ({ollama_host}): {e}")
+        console.print(f"\n[ ] Ollama HTTP API failed ({ollama_host}): {e}")
         print("[ℹ️] Falling back to native CLI...")
 
     try:
@@ -81,5 +81,5 @@ def run_ollama(
         return result.stdout.decode("utf-8").strip()
 
     except Exception as e:
-        return f"❌ Both Docker API and CLI failed: {e}"
+        return f"   Both Docker API and CLI failed: {e}"
 

@@ -158,5 +158,5 @@ def update_repomap(
     save_json(repomap_path, repomap)
     save_json(cache_path, new_hashes)
 
-    print(f"✅ Repomap updated: {len(repomap)} files mapped, {changed_count} changed.")
+    print(f" Repomap updated: {len(repomap)} files mapped, {changed_count} changed.")
 

@@ -46,7 +46,7 @@ def interactive_follow_up(
 
         trial_prompt = full_prompt + f"\n\nUser follow-up: {follow_up}"
         if len(trial_prompt) > MAX_PROMPT_CHARS:
-            console.print("[dim]⚠️ Prompt is getting large. Truncating earlier parts to fit model context.[/]")
+            console.print("[dim]  Prompt is getting large. Truncating earlier parts to fit model context.[/]")
             trial_prompt = trial_prompt[-MAX_PROMPT_CHARS:]
 
         console.print(f"\n[blue]🧪 Re-querying Ollama...[/]")
@@ -54,11 +54,11 @@ def interactive_follow_up(
         try:
             response = run_model_func(trial_prompt, model=model).strip()
         except Exception as e:
-            console.print(f"[red]❌ Error running model:[/] {e}")
+            console.print(f"[red]   Error running model:[/] {e}")
             continue
 
         if not response:
-            console.print("[yellow]⚠️ Model returned no output. Retrying once...[/]")
+            console.print("[yellow]  Model returned no output. Retrying once...[/]")
             try:
                 response = run_model_func(trial_prompt, model=model).strip()
             except Exception as e:

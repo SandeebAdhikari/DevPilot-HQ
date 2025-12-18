@@ -16,7 +16,7 @@ console = Console()
 
 def resolve_language(repo_path: Path, cli_lang: Optional[str]) -> str:
     if cli_lang:
-        console.print(f"[green]✅ Language from CLI:[/] {cli_lang}")
+        console.print(f"[green] Language from CLI:[/] {cli_lang}")
         return cli_lang
 
     repomap_file = repo_path / ".devpilot" / "repomap.json"
@@ -29,10 +29,10 @@ def resolve_language(repo_path: Path, cli_lang: Optional[str]) -> str:
                 console.print(f"[cyan]🔎 Inferred from repomap:[/] {lang}")
                 return lang
         except Exception as e:
-            console.print(f"[red]⚠️ Error reading repomap:[/] {e}")
+            console.print(f"[red]  Error reading repomap:[/] {e}")
 
     lang = detect_language_from_path(repo_path)
-    console.print(f"[yellow]⚠️ Fallback: inferred from file path:[/] {lang}")
+    console.print(f"[yellow]  Fallback: inferred from file path:[/] {lang}")
     return lang
 
 
@@ -164,11 +164,11 @@ def handle_onboard(
     plain_response = markdown_to_text(response)
 
     if not response.strip() or response.strip() in {"/", "1", "1111"}:
-        console.print("\n[yellow]⚠️ Warning: Model response is empty or unhelpful.[/]")
+        console.print("\n[yellow]  Warning: Model response is empty or unhelpful.[/]")
         console.print("[dim]Try a larger codebase or switch to a different model.[/]")
     else:
         pretty_response = Markdown(response)
-        console.print("\n[bold green]✅ Onboarding Summary:[/]\n")
+        console.print("\n[bold green] Onboarding Summary:[/]\n")
         console.print(pretty_response)
 
     log_path = resolve_log_path(mode="onboard", lang=lang, suppress_prompt=True)

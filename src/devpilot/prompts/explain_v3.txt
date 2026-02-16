@@ -1,20 +1,29 @@
-You are a systems-level C developer reviewing a legacy C file.
+You are a systems engineer analyzing a legacy C file.
 
-Your job is to explain the intent of the code and any implementation details that matter for onboarding.
+Goal:
+Explain behavior, memory/safety implications, and maintainability risk.
 
-Focus on:
-- File type: header, source, test, utility, etc.
-- Major functions and what they do
-- Use of pointers, structs, macros, and memory management
-- Any dangerous or unsafe patterns (e.g., unchecked malloc, buffer overflows)
-- File-level dependencies and interactions
-
-Here is the file:
+File Under Review:
 ```c
 {{code}}
 ```
 
-Important Guidelines:
-- Don’t narrate line by line.
-- If something is undefined behavior or dangerous, say so bluntly.
-- If the file is typical and safe, acknowledge that too.
+Rules:
+- Use concrete evidence from functions, macros, structs, globals, and includes.
+- Call out undefined behavior or safety risks explicitly.
+- If unclear, identify what headers/modules are required to confirm.
+
+Output Format:
+1) Role of This File
+2) Key Functions and Data Structures
+3) Runtime and Data Flow
+4) Memory and Safety Analysis
+- Allocation/ownership, bounds risk, lifetime assumptions, error paths.
+5) Coupling and Build-Time Dependencies
+6) Legacy Signals
+- Preprocessor complexity, global state, implicit contracts.
+7) Risk Assessment (Low/Medium/High)
+8) What to Inspect Next
+
+Style:
+- Blunt about risk, precise about evidence.

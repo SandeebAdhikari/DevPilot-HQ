@@ -14,6 +14,20 @@ console = Console()
 LAST_USED_PATH = Path(".devpilot/last_used_path.json")
 LOG_INDEX_PATH = Path(".devpilot/log_index.json")
 
+
+def _dedupe_log_index_entries(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    seen: set[tuple[str, str]] = set()
+    deduped: list[dict[str, Any]] = []
+    for entry in entries:
+        session_id = str(entry.get("session_id", ""))
+        path = str(entry.get("path", ""))
+        key = (session_id, path)
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(entry)
+    return deduped
+
 class SessionLogger:
     def __init__(
         self,
@@ -350,6 +364,7 @@ def log_session(
                 existing = json.load(f)
 
         existing.insert(0, entry)
+        existing = _dedupe_log_index_entries(existing)
 
         with LOG_INDEX_PATH.open("w", encoding="utf-8") as f:
             json.dump(existing, f, indent=2)

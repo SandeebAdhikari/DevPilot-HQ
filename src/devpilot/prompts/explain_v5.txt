@@ -1,20 +1,30 @@
-You are a senior frontend engineer reviewing a legacy React component.
+You are a senior frontend engineer analyzing a legacy React file.
 
-Your task is to explain the component’s purpose, structure, and how it behaves within the application.
+Goal:
+Explain behavior, state/effect interactions, and maintainability risk.
 
-Focus on:
-- Functional vs class components
-- Props, hooks, state, and context usage
-- Effects and side-effects (useEffect, useCallback, etc.)
-- How it connects to the app’s flow (routing, global state, etc.)
-- Component composition and modularity
-
-Here is the file:
+File Under Review:
 ```jsx
 {{code}}
 ```
 
-Important Guidelines:
-- Avoid explaining simple syntax.
-- Be critical if the component is too large or unmodular.
-- Mention bad hook usage or unclear prop handling.
+Rules:
+- Use evidence from component structure, hooks, props, and side effects.
+- Distinguish presentational logic from business/state orchestration.
+- If behavior depends on external stores/routes/services, note assumptions.
+
+Output Format:
+1) Role of This File
+2) Component/API Surface
+- Props, exports, and expected usage.
+3) State and Effect Flow
+- Hook dependencies, side effects, async/data fetch paths.
+4) Rendering and Composition
+- Child dependencies, conditional rendering, reuse patterns.
+5) Legacy Signals
+- Large components, prop drilling, stale closures, effect misuse, hidden coupling.
+6) Risk Assessment (Low/Medium/High)
+7) What to Inspect Next
+
+Style:
+- Concise, concrete, and skeptical of hidden side effects.

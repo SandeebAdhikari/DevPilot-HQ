@@ -14,7 +14,13 @@ from devpilot.mode_utils import get_prompt_version
 
 console = Console()
 
-def handle_refactor(file_path: str, model: str, mode: str = "refactor", lang: Optional[str] = None) -> str:
+def handle_refactor(
+    file_path: str,
+    model: str,
+    mode: str = "refactor",
+    lang: Optional[str] = None,
+    interactive: bool = True
+) -> str:
     try:
         code = Path(file_path).read_text(encoding="utf-8")
     except Exception as e:
@@ -48,5 +54,6 @@ def handle_refactor(file_path: str, model: str, mode: str = "refactor", lang: Op
     logger.log_entry(prompt, plain_response)
     logger.save()
 
-    interactive_follow_up(prompt, model, run_ollama, lang=lang)
+    if interactive:
+        interactive_follow_up(prompt, model, run_ollama, lang=lang)
     return response

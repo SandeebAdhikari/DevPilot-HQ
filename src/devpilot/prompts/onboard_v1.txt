@@ -13,11 +13,11 @@ Focus on:
 Here’s the project summary:
 ```text
 {{repomap_summary}}
+```
 
 Important guidelines:
 
 - Do NOT summarize line by line.
 - Focus on structure and purpose.
 - If files appear auto-generated, redundant, or confusing, say that directly.
-
 

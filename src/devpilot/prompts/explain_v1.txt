@@ -12,6 +12,7 @@ Focus on:
 Here is the file:
 ```python
 {{code}}
+```
 
 Important Guidelines:
 - Avoid line-by-line walkthroughs.

@@ -12,6 +12,7 @@ Focus on:
 Here is the file:
 ```{{lang}}
 {{code}}
+```
 
 Important Guidelines:
 - Think like an architect: how could this file's structure inform other parts of the system?

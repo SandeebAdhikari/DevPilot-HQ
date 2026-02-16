@@ -30,5 +30,4 @@ def test_detect_cpp_file(tmp_path: Path):
 def test_fallback_unknown_extension(tmp_path: Path):
     f = tmp_path / "README.md"
     f.write_text("// React component")
-    assert detect_language_from_path(f) == "python"
-
+    assert detect_language_from_path(f) == "plaintext"

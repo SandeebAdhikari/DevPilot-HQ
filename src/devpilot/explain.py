@@ -9,7 +9,8 @@ from devpilot.interactive import interactive_follow_up
 from devpilot.onboard import markdown_to_text
 from devpilot.log_utils import resolve_log_path
 from devpilot.session_logger import SessionLogger
-from devpilot.detect_lang import detect_language_from_path
+from devpilot.detect_lang import resolve_language_with_user_prompt
+from devpilot.mode_utils import get_prompt_version
 
 console = Console()
 
@@ -19,17 +20,8 @@ def handle_explain(file_path: str, model: str, mode: str = "explain", lang: Opti
     except Exception as e:
         return f"   Error reading file: {e}"
 
-    lang = lang or detect_language_from_path(Path(file_path))
-
-    # Map language string to integer version for prompt
-    lang_to_version = {
-        "python": 1,
-        "java": 2,
-        "c": 3,
-        "cpp": 4,
-        "react": 5,
-    }
-    version = lang_to_version.get(lang.lower(), 1)
+    lang = resolve_language_with_user_prompt(Path(file_path), cli_lang=lang)
+    version = get_prompt_version("explain", lang)
 
     prompt_path = get_prompt_path(mode, version=version)
     prompt = load_prompt_template(prompt_path, lang=lang, code=code)

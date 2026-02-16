@@ -12,6 +12,7 @@ Focus on:
 Here is the file:
 ```c
 {{code}}
+```
 
 Important Guidelines:
 - Don’t narrate line by line.

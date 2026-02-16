@@ -12,6 +12,7 @@ Focus on:
 Here is the file:
 ```jsx
 {{code}}
+```
 
 Important Guidelines:
 - Avoid explaining simple syntax.

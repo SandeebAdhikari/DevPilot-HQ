@@ -12,6 +12,7 @@ Focus on:
 Here is the file:
 ```java
 {{code}}
+```
 
 Important Guidelines:
 - Do not explain syntax.

@@ -12,6 +12,7 @@ Focus on:
 Here is the file:
 ```cpp
 {{code}}
+```
 
 Important Guidelines:
 - Say if the file mixes too many responsibilities.

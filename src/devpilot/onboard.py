@@ -6,7 +6,11 @@ from pathlib import Path
 from devpilot.log_utils import resolve_log_path
 from devpilot.session_logger import SessionLogger
 from devpilot.interactive import interactive_follow_up
-from devpilot.detect_lang import detect_language_from_path, infer_repo_language
+from devpilot.detect_lang import (
+    detect_language_from_path,
+    infer_repo_language,
+    prompt_for_language_if_unknown,
+)
 from devpilot.repomap_utils import update_repomap
 from typing import Optional
 from typing import List
@@ -32,6 +36,7 @@ def resolve_language(repo_path: Path, cli_lang: Optional[str]) -> str:
             console.print(f"[red]  Error reading repomap:[/] {e}")
 
     lang = detect_language_from_path(repo_path)
+    lang = prompt_for_language_if_unknown(lang, repo_path)
     console.print(f"[yellow]  Fallback: inferred from file path:[/] {lang}")
     return lang
 
@@ -179,4 +184,3 @@ def handle_onboard(
     interactive_follow_up(prompt, model, run_ollama, lang=lang)
 
     return response
-

@@ -12,6 +12,7 @@ Focus on:
 Here is the file:
 ```{{lang}}
 {{code}}
+```
 
 Important Guidelines:
 - Use best-effort analysis based on syntax and structure.

@@ -306,38 +306,10 @@ def cleanup_logs(older_than_days: int, show: bool = True) -> int:
 
 def scaffold_docs(repofile: Path) -> str:
     """
-    Builds a scaffold documentation string from repomap.json and relationship map.
+    Compatibility wrapper that delegates scaffold generation to rel_map.
     """
-    from devpilot.rel_map import extract_relationships
-
-    if not repofile.exists():
-        return "   repomap.json not found."
-
-    with repofile.open("r", encoding="utf-8") as f:
-        repomap = json.load(f)
-
-    relations = extract_relationships(repofile)
-    lines = ["# Project Scaffold\n", "## Key Files and Relationships\n"]
-
-    for file, meta in repomap.items():
-        lines.append(f"- {file}")
-
-        symbols = meta.get("symbols", {})
-        classes = symbols.get("classes", [])
-        funcs = symbols.get("functions", [])
-
-        if classes:
-            lines.append(f"  - Classes: {', '.join(classes)}")
-        if funcs:
-            lines.append(f"  - Functions: {', '.join(funcs)}")
-
-        imports = relations.get(file, set())
-        if imports:
-            lines.append(f"  - Imports: {', '.join(sorted(imports))}")
-
-        lines.append("")  # empty line for spacing
-
-    return "\n".join(lines)
+    from devpilot.rel_map import scaffold_docs as relmap_scaffold_docs
+    return relmap_scaffold_docs(repofile)
 
 def log_session(
     session_id: str,

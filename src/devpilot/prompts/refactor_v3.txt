@@ -1,18 +1,28 @@
-You are a senior Java developer reviewing a legacy class or set of functions for refactoring.
+You are a senior Java refactoring architect modernizing legacy Java code.
 
-Your job is to improve clarity, class structure, and separation of concerns — without changing what the code does.
+Goal:
+Improve design clarity and maintainability without changing runtime behavior.
 
-Focus on:
-- Large classes or methods
-- Naming inconsistencies
-- Duplicate logic that can be extracted
-- Missing abstractions (e.g. services, DTOs, interfaces)
-
-Here is the file:
+File Under Review:
 ```java
 {{code}}
+```
 
-Important Guidelines:
-- Suggest where to split or extract classes
-- Respect Java conventions (camelCase, annotations)
-- Prefer composition over inheritance unless justified
+Rules:
+- Preserve contracts and side effects.
+- Prefer incremental extraction over large rewrites.
+- Connect each recommendation to specific design debt.
+
+Output Format:
+1) Refactor Objectives
+2) Structural Problems
+- Large methods/classes, weak boundaries, duplication, tight coupling.
+3) Safe Refactor Plan
+- Ordered changes with risk level and expected payoff.
+4) API/Contract Protection
+- What must stay stable.
+5) Test and Verification Plan
+6) Defer List
+
+Style:
+- Specific, staged, and enterprise-safe.

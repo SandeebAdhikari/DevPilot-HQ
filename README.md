@@ -51,7 +51,7 @@ ollama pull llama3
 
 ```bash
 # Option 1: Locally
-ollama run llama3
+ollama serve
 
 # Option 2: With Docker
 docker run -d -p 11434:11434 ollama/ollama
@@ -70,9 +70,32 @@ devpilot /path/to/views.py --mode=explain --model=llama3
 
 # Suggest refactors
 devpilot /path/to/app.jsx --mode=refactor --model=llama3
+
+# Build relmap + scaffold + summary
+devpilot --relmap
+
+# Trace likely entrypoints and reachable file flow
+devpilot --trace-entry
+
+# Trace a symbol across definitions/references/reachability
+devpilot --trace-symbol main
+
+# Choose trace output format
+devpilot --trace-entry --trace-format mermaid
+devpilot --trace-symbol AuthService --trace-format json
 ```
 
 Use `--lang` to override language detection (e.g., `--lang=java`).
+
+### Interactive Follow-Up Commands
+
+Inside interactive follow-up mode, you can run:
+
+- `/explain filename.py` — run explain mode for a file
+- `/refactor filename.py` — run refactor mode for a file
+- `@filename.py what does this do?` — attach file context and ask a targeted question
+
+If duplicate filenames exist, DevPilot prompts you to choose using numbered path options.
 
 ---
 
@@ -91,12 +114,12 @@ Prompt templates live in the `prompts/` folder. DevPilot dynamically selects the
 
 ## Prompt Templates
 
-| Template File         | Description                   |
-| --------------------- | ----------------------------- |
-| **`onboard_v1.txt`**  | Used for project onboarding   |
-| **`explain_v1.txt`**  | Used to explain a single file |
-| **`refactor_v1.txt`** | Suggests code improvements    |
-| **`scaffold_v1.txt`** | Language-specific variants    |
+| Template File             | Description                                  |
+| ------------------------- | -------------------------------------------- |
+| **`onboard_v1.txt`**      | Used for project onboarding                  |
+| **`explain_v1..v6.txt`**  | Language-specific + generic explain prompts  |
+| **`refactor_v1..v6.txt`** | Language-specific + generic refactor prompts |
+| **`scaffold_v1.txt`**     | Architecture scaffold prompt                 |
 
 These are stored outside the Python package and bundled for binaries using PyInstaller.
 
@@ -107,8 +130,12 @@ These are stored outside the Python package and bundled for binaries using PyIns
 - Language-aware prompts
 - Automatic log saving and path resolution
 - Interactive follow-up by default
+- Interactive slash commands and `@file` targeting
+- Duplicate filename resolution with path-aware chooser
 - Streaming response display
 - Smart prompt truncation
+- Entry tracing (`--trace-entry`) and symbol tracing (`--trace-symbol`)
+- Trace output formats (`md`, `json`, `mermaid`)
 - Fully offline (no cloud calls)
 - Works with any Ollama model
 
@@ -136,6 +163,10 @@ devpilot ./myrepo --mode=onboard --model=llama3
 - **`README_AI.md`**: generated scaffold of project logic.
 
 - **`README_SUMMARY.md`**: LLM-generated English summary of structure.
+
+- **`ENTRY_TRACE.md/.json/.mmd`**: inferred entrypoint-driven flow report.
+
+- **`SYMBOL_TRACE_<symbol>.md/.json/.mmd`**: symbol-level definition/reference/reachability report.
 
 - **`Logs`**: Markdown logs saved under .devpilot/logs/ if and only if scaffold or summary is created. Replays are possible.
 
@@ -203,7 +234,7 @@ This separation of structure vs. relationships forms the foundation for future f
 
 - **`--explain-connections`**: visualize file-to-file logic relationships
 
-- **`--scaffold-docs`**: auto-generate Markdown diagrams or flow breakdowns
+- **`--impact`**: estimate likely downstream blast radius from a changed file/symbol
 
 Together, these maps provide the most powerful way to analyze a legacy codebase offline, without needing to run or test it.
 
@@ -228,8 +259,11 @@ devpilot --cleanup-logs <days>          # Delete all saved logs by days
 | **`--preview-prompt`**  | Shows the final prompt that would be sent to the LLM, but does not run inference |
 | **`--scaffold-docs`**   | Generates only the Markdown scaffold from **`relmap.json`** (no LLM used)        |
 | **`--lang=<language>`** | Overrides language detection (e.g., **`--lang=java`**)                           |
+| **`--trace-entry`**     | Detects likely entrypoints and generates an inter-file trace report              |
+| **`--trace-symbol`**    | Traces a symbol across definitions, references, and downstream file graph        |
+| **`--trace-format`**    | Trace output format: **`md`**, **`json`**, or **`mermaid`**                      |
 
-DevPilot logs every major mode (onboarding, explain, refactor, relmap) into versioned Markdown files. This is essential for audits, traceability, or keeping a changelog of what the LLM said — and why.
+DevPilot logs every major mode (onboarding, explain, refactor, relmap, trace-entry, trace-symbol) into indexed files. This is essential for audits, traceability, or keeping a changelog of what the LLM said — and why.
 
 ---
 
@@ -248,7 +282,7 @@ Each prompt is built from a template file stored in the **`prompts/`** folder. T
 
 **`{{code}}`** → Replaced with the contents of a file (for explain, refactor)
 
-**`{{repo_summary}}`** → Replaced with a smart summary of the codebase (for onboard)
+**`{{repomap_summary}}`** → Replaced with a smart summary of the codebase (for onboard)
 
 **`{{lang}}`** → Used to select or tag the language of the content (python, java, etc.)
 
@@ -302,6 +336,10 @@ devpilot MyApp.java --mode=refactor --preview-prompt
 - [x] Prompt previewing without LLM calls
 - [x] Standalone flags: --generate-map, --clean, --relmap, --scaffold-docs
 - [x] Logging flags: --list-logs, --restore-log, --cleanup-logs
+- [x] Entry flow tracing: --trace-entry
+- [x] Symbol tracing: --trace-symbol
+- [x] Trace export formats: --trace-format (md/json/mermaid)
+- [x] Interactive inline commands: /explain, /refactor, @file targeting
 
 ### Phase 2: Launch & Promote
 

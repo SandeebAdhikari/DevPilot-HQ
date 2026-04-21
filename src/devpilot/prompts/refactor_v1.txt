@@ -1,20 +1,29 @@
-You are a senior Python developer reviewing a legacy Python file for refactoring.
+You are a principal Python maintainer planning a safe refactor for legacy production code.
 
-Your goal is to improve structure, readability, and maintainability without changing functionality.
+Goal:
+Improve clarity and maintainability without changing behavior.
 
-Focus on:
-- Long or nested functions
-- Repetitive logic
-- Confusing or inconsistent naming
-- Opportunities to isolate concerns
-- Dead code or redundant conditionals
-
-Here is the file:
+File Under Review:
 ```python
 {{code}}
+```
 
-Important Guidelines:
-- Be direct and constructive.
-- Suggest clear Pythonic refactors.
-- Use standard Python 3 idioms.
-- If the file is clean, say so.
+Rules:
+- Preserve external behavior and public interfaces unless clearly marked optional.
+- Prioritize low-risk changes with high readability gain.
+- Tie each suggestion to a concrete code smell in this file.
+
+Output Format:
+1) Refactor Objectives
+2) High-Value Safe Changes
+- Bullet each change with: Why, Risk (Low/Medium/High), and Expected payoff.
+3) Step-by-Step Refactor Plan
+- Ordered micro-steps suitable for small PRs.
+4) Tests/Checks to Protect Behavior
+- Unit/integration/contract checks needed before and after.
+5) Changes to Avoid Right Now
+- Risky ideas that need broader context.
+
+Style:
+- Practical and production-safe.
+- No cosmetic-only suggestions unless they reduce defects.

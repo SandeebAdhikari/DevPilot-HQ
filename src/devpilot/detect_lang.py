@@ -1,4 +1,19 @@
+import sys
 from pathlib import Path
+from typing import Callable, Optional
+
+
+KNOWN_LANGUAGES = {"python", "java", "c", "cpp", "react"}
+LANGUAGE_ALIASES = {
+    "py": "python",
+    "javascript": "react",
+    "js": "react",
+    "jsx": "react",
+    "typescript": "react",
+    "ts": "react",
+    "tsx": "react",
+    "c++": "cpp",
+}
 
 def detect_language_from_path(path: Path) -> str:
     """
@@ -8,7 +23,8 @@ def detect_language_from_path(path: Path) -> str:
         path (Path): A file path or root directory
 
     Returns:
-        str: Detected language string (e.g., "python", "react", "java", "c", "cpp")
+        str: Detected language string (e.g., "python", "react", "java", "c", "cpp"),
+            or "plaintext" if unknown.
     """
     if path.is_file():
         suffix = path.suffix.lower()
@@ -53,7 +69,46 @@ def detect_language_from_path(path: Path) -> str:
         if ".py" in suffixes:
             return "python"
 
-    return "python"  
+    return "plaintext"
+
+
+def normalize_language(lang: str) -> str:
+    normalized = lang.strip().lower()
+    return LANGUAGE_ALIASES.get(normalized, normalized)
+
+
+def prompt_for_language_if_unknown(
+    detected_lang: str,
+    path: Path,
+    input_func: Callable[[str], str] = input,
+) -> str:
+    if detected_lang != "plaintext":
+        return detected_lang
+
+    if not sys.stdin.isatty():
+        return "plaintext"
+
+    prompt = (
+        f"Could not detect language for '{path}'. "
+        "Enter language (python/java/c/cpp/react) or custom (e.g. rust). "
+        "Press Enter to continue with generic mode: "
+    )
+    entered = input_func(prompt).strip()
+    if not entered:
+        return "plaintext"
+    return normalize_language(entered)
+
+
+def resolve_language_with_user_prompt(
+    path: Path,
+    cli_lang: Optional[str] = None,
+    input_func: Callable[[str], str] = input,
+) -> str:
+    if cli_lang:
+        return normalize_language(cli_lang)
+
+    detected = detect_language_from_path(path)
+    return prompt_for_language_if_unknown(detected, path, input_func=input_func)
 
 def infer_repo_language(repomap: dict[str, dict[str, str]]) -> str:
     """
@@ -73,4 +128,3 @@ def infer_repo_language(repomap: dict[str, dict[str, str]]) -> str:
 
     # Return most common language
     return max(lang_count.items(), key=lambda x: x[1])[0]
-

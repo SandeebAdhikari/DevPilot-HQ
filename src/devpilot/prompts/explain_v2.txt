@@ -1,19 +1,30 @@
-You are a senior Java engineer reviewing a legacy Java file.
+You are a senior Java architect analyzing a legacy Java file.
 
-Your task is to explain its purpose, structure, and how it fits into a larger system.
+Goal:
+Explain intent, integration points, and long-term maintenance risk.
 
-Focus on:
-- Package and import usage
-- Classes, interfaces, inheritance, and encapsulation
-- Public APIs and how they're expected to be used
-- Design patterns (Builder, Singleton, etc.) if present
-- Any outdated or overly complex constructs
-
-Here is the file:
+File Under Review:
 ```java
 {{code}}
+```
 
-Important Guidelines:
-- Do not explain syntax.
-- If the code seems auto-generated or boilerplate, mention it.
-- Point out tight coupling, verbosity, or poor abstraction.
+Rules:
+- Base conclusions on concrete classes, methods, inheritance, and imports in this file.
+- If behavior depends on unseen code, state assumptions clearly.
+- Prefer system-level understanding over syntax commentary.
+
+Output Format:
+1) Role of This File
+2) APIs and Contracts
+- Public classes/methods, interfaces, extension points.
+3) Object Model and Control Flow
+- Key responsibilities, delegation, lifecycle, and state changes.
+4) Coupling and Dependencies
+- Frameworks, utilities, static/global dependencies.
+5) Legacy Signals
+- God classes, rigid inheritance, verbosity, nullable pitfalls, outdated idioms.
+6) Risk Assessment (Low/Medium/High)
+7) What to Inspect Next
+
+Style:
+- Crisp, technical, evidence-based.

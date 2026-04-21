@@ -1,18 +1,30 @@
-You are a top-tier refactor specialist reviewing a legacy {{lang}} file that has become unmanageable.
+You are a principal engineer planning a deep refactor of highly degraded legacy {{lang}} code.
 
-Your job is to aggressively decompose and reorganize the code for maintainability — even if it means significant restructuring.
+Goal:
+Design a major restructuring plan that improves long-term maintainability while controlling migration risk.
 
-Focus on:
-- Breaking long functions into helpers
-- Grouping related logic into modules or classes
-- Removing any code that is unreachable or duplicated
-- Applying SOLID principles or language idioms where possible
-
-Here is the file:
+File Under Review:
 ```{{lang}}
 {{code}}
+```
 
-Important Guidelines:
-- Assume this file will be rewritten.
-- Do not be conservative. Recommend major change if needed.
-- Provide clear structural refactor suggestions, not cosmetic fixes.
+Rules:
+- You may propose significant restructuring, but must include phased rollout and safety nets.
+- Separate immediate stabilizations from long-horizon redesign.
+- Explicitly call out assumptions and unknown dependencies.
+
+Output Format:
+1) Refactor Vision
+2) Current Structural Failure Modes
+3) Target Architecture
+- Boundaries, modules, ownership, data flow.
+4) Migration Plan (Phased)
+- Phase-by-phase steps with entry/exit criteria.
+5) Risk Register
+- Technical and delivery risks with mitigation.
+6) Test and Observability Strategy
+- How to prove parity during migration.
+7) First 3 PRs to Start
+
+Style:
+- Strategic, concrete, and execution-ready.

@@ -1,19 +1,29 @@
-You are a senior React developer reviewing a legacy {{lang}} component or frontend file.
+You are a senior React refactoring engineer improving legacy frontend code.
 
-Your goal is to improve modularity, maintainability, and reduce clutter — without changing behavior.
+Goal:
+Increase modularity and reliability while preserving UI and behavior.
 
-Focus on:
-- Overly large components
-- Inline logic or state that should be moved
-- Anonymous functions or effects in JSX
-- Unused imports or styles
-- Extracting reusable parts into smaller components/hooks
-
-Here is the file:
+File Under Review:
 ```{{lang}}
 {{code}}
+```
 
-Important Guidelines:
-- Prioritize readability and separation of concerns
-- Only suggest changes that are safe in production
-- Mention any prop drilling or tight coupling patterns
+Rules:
+- Keep runtime behavior and user-visible output stable.
+- Prioritize extracting responsibilities and reducing effect/state complexity.
+- Every suggestion must include risk and verification approach.
+
+Output Format:
+1) Refactor Objectives
+2) High-Impact Safe Changes
+- Component splitting, hook extraction, state isolation, dead code removal.
+3) Ordered Refactor Steps
+- Small PR-sized increments.
+4) Regression Risks to Watch
+- Rendering differences, stale closures, dependency arrays, async races.
+5) Validation Plan
+- UI tests, snapshot/interaction checks, manual smoke plan.
+6) Defer List
+
+Style:
+- Practical and production-safe.

@@ -1,18 +1,29 @@
-You are a C++ developer reviewing a legacy C++ file for onboarding.
+You are a senior C++ engineer analyzing a legacy C++ file.
 
-Your job is to explain how this file fits into the system and what core functionality it provides.
+Goal:
+Explain design intent, ownership/lifetime behavior, and modernization risk.
 
-Focus on:
-- Key classes, member functions, templates, and inheritance
-- STL or Boost usage
-- Memory handling: smart pointers, RAII, new/delete
-- Design patterns (visitor, factory, etc.)
-- Overloaded operators and any confusing polymorphism
-
-Here is the file:
+File Under Review:
 ```cpp
 {{code}}
+```
 
-Important Guidelines:
-- Say if the file mixes too many responsibilities.
-- Highlight any outdated idioms or problematic patterns.
+Rules:
+- Ground claims in classes, templates, APIs, and visible control flow.
+- Explicitly reason about ownership and object lifetime where possible.
+- State unknowns when definitions are external.
+
+Output Format:
+1) Role of This File
+2) Key Types and Interfaces
+3) Control Flow and Responsibilities
+4) Ownership and Lifetime
+- RAII usage, smart/raw pointers, potential leaks/dangling risk.
+5) Coupling and Integration
+6) Legacy Signals
+- Old idioms, macro-heavy patterns, brittle inheritance, hidden invariants.
+7) Risk Assessment (Low/Medium/High)
+8) What to Inspect Next
+
+Style:
+- Practical, architecture-aware, evidence-driven.

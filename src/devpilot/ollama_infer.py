@@ -10,7 +10,7 @@ console = Console()
 
 def run_ollama(
     prompt: str,
-    model: str = "llama2",
+    model: str = "llama3",
     timeout: int = 90,
     max_retries: int = 1,
     system_prompt: str = "",
@@ -66,7 +66,7 @@ def run_ollama(
 
     except Exception as e:
         console.print(f"\n[ ] Ollama HTTP API failed ({ollama_host}): {e}")
-        print("[ℹ️] Falling back to native CLI...")
+        print("Falling back to native CLI...")
 
     try:
         result = subprocess.run(

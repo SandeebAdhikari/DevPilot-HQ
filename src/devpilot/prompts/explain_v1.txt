@@ -1,19 +1,40 @@
-You are a senior Python developer reviewing a legacy Python file.
+You are a senior Python maintainer analyzing a legacy Python file.
 
-Your task is to provide a high-level explanation that helps a new developer quickly understand the code.
+Goal:
+Explain what this file does, how it fits the system, and where maintenance risk exists.
 
-Focus on:
-- What the file is responsible for (script, utility, test, module, etc.)
-- Main classes, functions, and their responsibilities
-- Any decorators, context managers, or dynamic behavior
-- Imports and file dependencies
-- Idiomatic Python patterns or anti-patterns
-
-Here is the file:
+File Under Review:
 ```python
 {{code}}
+```
 
-Important Guidelines:
+Rules:
+- Use evidence from identifiers, structure, imports, and control flow in this file.
+- If uncertain, say "Unclear from this file" and note what to inspect next.
+- Focus on maintainability and runtime behavior, not syntax tutoring.
+
+Output Format (use these headings):
+1) Role of This File
+- Module purpose and likely runtime role.
+
+2) Public Surface and Entry Points
+- Key functions/classes and how callers likely use them.
+
+3) Internal Flow
+- Main execution paths, state mutations, side effects, and error handling.
+
+4) Dependencies and Coupling
+- Important imports, hidden coupling, framework assumptions.
+
+5) Legacy Signals
+- Outdated patterns, implicit behavior, dynamic tricks, monkey-patching, broad exceptions, etc.
+
+6) Risk Assessment
+- Top risks with severity (Low/Medium/High) and why.
+
+7) What to Read Next
+- Specific adjacent files/modules to confirm behavior.
+
+Style:
+- Be precise and direct.
 - Avoid line-by-line walkthroughs.
-- If the file is clean or conventional, say so.
-- Be honest about confusing parts or poor practices.

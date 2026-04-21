@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from pytest import MonkeyPatch
 
 import devpilot.onboarder as onboarder
 
@@ -13,7 +14,7 @@ def test_resolve_mode_target_file_direct_path(tmp_path: Path):
 
 
 def test_resolve_mode_target_file_uses_last_onboarded_repo_for_unique_match(
-    monkeypatch, tmp_path: Path
+    monkeypatch: MonkeyPatch, tmp_path: Path
 ):
     repo = tmp_path / "repo"
     repo.mkdir()
@@ -30,7 +31,7 @@ def test_resolve_mode_target_file_uses_last_onboarded_repo_for_unique_match(
 
 
 def test_resolve_mode_target_file_allows_relative_path_inside_last_repo(
-    monkeypatch, tmp_path: Path
+    monkeypatch: MonkeyPatch, tmp_path: Path
 ):
     repo = tmp_path / "repo"
     repo.mkdir()
@@ -47,7 +48,7 @@ def test_resolve_mode_target_file_allows_relative_path_inside_last_repo(
 
 
 def test_resolve_mode_target_file_prompts_for_duplicate_names(
-    monkeypatch, tmp_path: Path
+    monkeypatch: MonkeyPatch, tmp_path: Path
 ):
     repo = tmp_path / "repo"
     a = repo / "service_a" / "views.py"
@@ -62,7 +63,10 @@ def test_resolve_mode_target_file_prompts_for_duplicate_names(
     monkeypatch.setattr(onboarder, "LAST_USED_PATH", last_used)
 
     monkeypatch.setattr("sys.stdin.isatty", lambda: True)
-    monkeypatch.setattr("builtins.input", lambda _: "2")
+    def fake_input(prompt: str) -> str:
+        _ = prompt
+        return "2"
+    monkeypatch.setattr("builtins.input", fake_input)
 
     resolved = onboarder.resolve_mode_target_file(Path("views.py"))
     assert resolved is not None
@@ -79,7 +83,7 @@ def test_disambiguation_labels_use_parent_and_file(tmp_path: Path):
     a.write_text("a", encoding="utf-8")
     b.write_text("b", encoding="utf-8")
 
-    labels = onboarder._build_disambiguation_labels([a, b], repo)
+    labels = onboarder.build_disambiguation_labels([a, b], repo)
 
     assert labels[a] == "component/view.py"
     assert labels[b] == "main/view.py"
@@ -94,7 +98,7 @@ def test_disambiguation_labels_expand_when_parent_collides(tmp_path: Path):
     a.write_text("a", encoding="utf-8")
     b.write_text("b", encoding="utf-8")
 
-    labels = onboarder._build_disambiguation_labels([a, b], repo)
+    labels = onboarder.build_disambiguation_labels([a, b], repo)
 
     assert labels[a] == "apps/web/view.py"
     assert labels[b] == "services/web/view.py"

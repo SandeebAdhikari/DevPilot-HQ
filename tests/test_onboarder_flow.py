@@ -1,5 +1,6 @@
 import argparse
 from pathlib import Path
+from pytest import MonkeyPatch
 
 import devpilot.onboarder as onboarder
 import devpilot.prompt as prompt_module
@@ -23,12 +24,16 @@ def _args(**overrides):
         "scaffold_docs": False,
         "preview_prompt": False,
         "relmap": False,
+        "trace_entry": False,
+        "trace_symbol": None,
+        "trace_format": "md",
+        "refresh_map": False,
     }
     base.update(overrides)
     return argparse.Namespace(**base)
 
 
-def test_preview_onboard_uses_repomap_summary(monkeypatch, tmp_path: Path):
+def test_preview_onboard_uses_repomap_summary(monkeypatch: MonkeyPatch, tmp_path: Path):
     monkeypatch.chdir(tmp_path)
     (tmp_path / ".devpilot").mkdir(parents=True)
     (tmp_path / ".devpilot" / "repomap.json").write_text("{}", encoding="utf-8")
@@ -56,7 +61,7 @@ def test_preview_onboard_uses_repomap_summary(monkeypatch, tmp_path: Path):
     assert "content" not in captured
 
 
-def test_onboard_pipeline_runs_build_then_scaffold_then_summary(monkeypatch):
+def test_onboard_pipeline_runs_build_then_scaffold_then_summary(monkeypatch: MonkeyPatch):
     order = []
 
     def fake_build(path: Path):
@@ -85,7 +90,7 @@ def test_onboard_pipeline_runs_build_then_scaffold_then_summary(monkeypatch):
     ]
 
 
-def test_session_logger_scaffold_docs_delegates_to_rel_map(monkeypatch, tmp_path: Path):
+def test_session_logger_scaffold_docs_delegates_to_rel_map(monkeypatch: MonkeyPatch, tmp_path: Path):
     relmap_path = tmp_path / "relmap.json"
     called = {}
 

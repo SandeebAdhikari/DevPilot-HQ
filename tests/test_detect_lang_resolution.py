@@ -1,4 +1,5 @@
 from pathlib import Path
+from pytest import MonkeyPatch
 
 from devpilot.detect_lang import (
     normalize_language,
@@ -13,7 +14,7 @@ def test_normalize_language_aliases():
     assert normalize_language("python") == "python"
 
 
-def test_prompt_for_unknown_uses_user_input(monkeypatch, tmp_path: Path):
+def test_prompt_for_unknown_uses_user_input(monkeypatch: MonkeyPatch, tmp_path: Path):
     unknown_file = tmp_path / "legacy.foo"
     unknown_file.write_text("x", encoding="utf-8")
 
@@ -23,7 +24,7 @@ def test_prompt_for_unknown_uses_user_input(monkeypatch, tmp_path: Path):
     assert resolved == "rust"
 
 
-def test_prompt_for_unknown_enter_keeps_generic(monkeypatch, tmp_path: Path):
+def test_prompt_for_unknown_enter_keeps_generic(monkeypatch: MonkeyPatch, tmp_path: Path):
     unknown_file = tmp_path / "legacy.foo"
     unknown_file.write_text("x", encoding="utf-8")
 
@@ -33,7 +34,7 @@ def test_prompt_for_unknown_enter_keeps_generic(monkeypatch, tmp_path: Path):
     assert resolved == "plaintext"
 
 
-def test_prompt_for_unknown_non_interactive_stays_generic(monkeypatch, tmp_path: Path):
+def test_prompt_for_unknown_non_interactive_stays_generic(monkeypatch: MonkeyPatch, tmp_path: Path):
     unknown_file = tmp_path / "legacy.foo"
     unknown_file.write_text("x", encoding="utf-8")
 

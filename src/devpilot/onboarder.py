@@ -4,7 +4,7 @@ from rich.console import Console
 from devpilot.onboard import handle_onboard
 from devpilot.explain import handle_explain
 from devpilot.refactor import handle_refactor
-from devpilot.repomap_utils import update_repomap
+from devpilot.repomap_utils import update_repomap, refresh_repomap
 from devpilot.constants import LAST_USED_PATH
 import argparse
 import json
@@ -53,6 +53,10 @@ def _build_disambiguation_labels(candidates: list[Path], repo_root: Path) -> dic
     return {candidate: "/".join(parts) for candidate, parts in rel_parts.items()}
 
 
+def build_disambiguation_labels(candidates: list[Path], repo_root: Path) -> dict[Path, str]:
+    return _build_disambiguation_labels(candidates, repo_root)
+
+
 def _choose_file_from_candidates(candidates: list[Path], repo_root: Path) -> Optional[Path]:
     if not candidates:
         return None
@@ -61,7 +65,7 @@ def _choose_file_from_candidates(candidates: list[Path], repo_root: Path) -> Opt
         console.print(f"[green]Using:[/] {_candidate_label(selected, repo_root)}")
         return selected
 
-    labels = _build_disambiguation_labels(candidates, repo_root)
+    labels = build_disambiguation_labels(candidates, repo_root)
     console.print("[yellow]Multiple files found with that name. Select one:[/]")
     for idx, candidate in enumerate(candidates, start=1):
         console.print(f"{idx}. {labels[candidate]}")
@@ -158,6 +162,11 @@ def parse_args():
         action="store_true",
         help="Standalone mode: generate mapping file for last used or current repo"
     )
+    parser.add_argument(
+        "--refresh-map",
+        action="store_true",
+        help="Prototype mode: attempt incremental repomap refresh using file mtimes"
+    )
 
     parser.add_argument(
         "--list-logs",
@@ -195,6 +204,23 @@ def parse_args():
         "--relmap",
         action="store_true",
         help="Build relational map from repomap.json"
+    )
+    parser.add_argument(
+        "--trace-entry",
+        action="store_true",
+        help="Detect likely entry files and generate inter-file trace report from relmap"
+    )
+    parser.add_argument(
+        "--trace-symbol",
+        type=str,
+        metavar="SYMBOL",
+        help="Trace a function/class symbol through definitions, references, and downstream file graph"
+    )
+    parser.add_argument(
+        "--trace-format",
+        choices=["md", "json", "mermaid"],
+        default="md",
+        help="Output format for --trace-entry and --trace-symbol (md, json, mermaid)"
     )
 
     return parser.parse_args()
@@ -242,6 +268,73 @@ def main():
 
         except Exception as e:
             console.print(f"[red]   Failed during relmap processing:[/] {e}")
+        return
+
+    if getattr(args, "trace_entry", False):
+        from devpilot.constants import REPO_MAP_PATH, REL_MAP_PATH
+        from devpilot.rel_map import build_relational_map
+        from devpilot.entry_trace import generate_entry_trace
+        from devpilot.session_logger import log_session
+
+        if not REL_MAP_PATH.exists():
+            if not REPO_MAP_PATH.exists():
+                console.print("[red]   repomap.json not found. Run onboarding first.[/]")
+                return
+            try:
+                build_relational_map(REPO_MAP_PATH)
+            except Exception as e:
+                console.print(f"[red]   Failed to build relmap for trace:[/] {e}")
+                return
+
+        try:
+            report, output_path = generate_entry_trace(REL_MAP_PATH, format=args.trace_format)
+            console.print(f"[green] Entry trace saved to:[/] {output_path}")
+            console.print(report)
+            suffix = output_path.suffix.lstrip(".") or "txt"
+            log_session(
+                session_id="entry_trace",
+                content=report,
+                format="markdown" if args.trace_format == "md" else "text",
+                suffix=suffix
+            )
+        except Exception as e:
+            console.print(f"[red]   Failed to generate entry trace:[/] {e}")
+        return
+
+    if args.trace_symbol:
+        from devpilot.constants import REPO_MAP_PATH, REL_MAP_PATH
+        from devpilot.rel_map import build_relational_map
+        from devpilot.entry_trace import generate_symbol_trace, sanitize_symbol_filename
+        from devpilot.session_logger import log_session
+
+        if not REL_MAP_PATH.exists():
+            if not REPO_MAP_PATH.exists():
+                console.print("[red]   repomap.json not found. Run onboarding first.[/]")
+                return
+            try:
+                build_relational_map(REPO_MAP_PATH)
+            except Exception as e:
+                console.print(f"[red]   Failed to build relmap for symbol trace:[/] {e}")
+                return
+
+        try:
+            report, output_path = generate_symbol_trace(
+                args.trace_symbol,
+                REL_MAP_PATH,
+                format=args.trace_format
+            )
+            safe_symbol = sanitize_symbol_filename(args.trace_symbol)
+            console.print(f"[green] Symbol trace saved to:[/] {output_path}")
+            console.print(report)
+            suffix = output_path.suffix.lstrip(".") or "txt"
+            log_session(
+                session_id=f"trace_symbol_{safe_symbol}",
+                content=report,
+                format="markdown" if args.trace_format == "md" else "text",
+                suffix=suffix
+            )
+        except Exception as e:
+            console.print(f"[red]   Failed to generate symbol trace:[/] {e}")
         return
 
     if args.scaffold_docs:
@@ -308,6 +401,24 @@ def main():
                 console.print(REPO_MAP_PATH.read_text())
         except KeyboardInterrupt:
             pass
+        return
+
+    if args.refresh_map and args.repo_path is None:
+        try:
+            from pathlib import Path
+            from devpilot.constants import REPO_MAP_PATH, REPO_CACHE_PATH, LAST_USED_PATH
+            with open(LAST_USED_PATH) as f:
+                repo_path: Path = Path(json.load(f)["repo_path"])
+        except Exception:
+            console.print(f"[red]   No previous repo path found. Please run onboarding first.")
+            return
+
+        refresh_repomap(
+            repo_root=repo_path,
+            repomap_path=REPO_MAP_PATH,
+            cache_path=REPO_CACHE_PATH,
+        )
+        console.print("[green] Repomap refreshed (prototype).[/]")
         return
 
     if args.preview_prompt:

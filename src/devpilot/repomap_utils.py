@@ -7,6 +7,7 @@ from typing import Dict, Any
 
 REPO_CACHE_PATH = Path(".devpilot/repomap_cache.json")
 REPO_MAP_PATH = Path(".devpilot/repomap.json")
+REPO_MTIME_PATH = Path(".devpilot/repomap_mtime.json")
 
 SKIP_DIRS = {"node_modules", ".git", "__pycache__", ".venv", ".devpilot", ".next"}
 SKIP_FILES = {
@@ -29,6 +30,9 @@ def save_json(path: Path, data: Dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
+
+def get_file_mtime(path: Path) -> float:
+    return path.stat().st_mtime
 
 def should_skip(path: Path) -> bool:
     if any(part in SKIP_DIRS for part in path.parts):
@@ -159,4 +163,55 @@ def update_repomap(
     save_json(cache_path, new_hashes)
 
     print(f" Repomap updated: {len(repomap)} files mapped, {changed_count} changed.")
+
+def refresh_repomap(
+    repo_root: Path,
+    repomap_path: Path = REPO_MAP_PATH,
+    cache_path: Path = REPO_CACHE_PATH,
+    mtime_path: Path = REPO_MTIME_PATH,
+) -> None:
+    """
+    Naive prototype refresh: only re-hash/re-extract files whose mtime changed.
+    Keeps behavior intentionally simple and may miss edge cases.
+    """
+    repomap = load_json(repomap_path)
+    hashes = load_json(cache_path)
+    prev_mtimes = load_json(mtime_path)
+
+    new_mtimes: Dict[str, float] = {}
+    refreshed_count = 0
+
+    for file in repo_root.rglob("*"):
+        if file.is_dir():
+            continue
+
+        rel_path = file.relative_to(repo_root)
+        rel_path_str = str(rel_path)
+
+        if should_skip(rel_path):
+            continue
+
+        try:
+            mtime = get_file_mtime(file)
+        except Exception:
+            continue
+
+        new_mtimes[rel_path_str] = mtime
+
+        # Skip unchanged files by simple mtime heuristic.
+        if prev_mtimes.get(rel_path_str) == mtime:
+            continue
+
+        file_hash = get_file_hash(file)
+        hashes[rel_path_str] = file_hash
+        metadata = extract_metadata(file)
+        if metadata.get("language") != "unknown":
+            repomap[rel_path_str] = metadata
+            refreshed_count += 1
+
+    save_json(repomap_path, repomap)
+    save_json(cache_path, hashes)
+    save_json(mtime_path, new_mtimes)
+
+    print(f" Repomap refreshed: {len(repomap)} files mapped, {refreshed_count} files reprocessed.")
 
